@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adducity Rapid Repid Response & High Visibility</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+</head>
+<body>
+    <div class="hero-header">
+        <div class="wrapper">
+            <header>
+                <div class="logo">
+                    <i class="fa-solid fa"></i>
+                    <div class="logo-text">Rapid Response & High Visibility</div>
+                </div>
+                <nav>
+                    <div class="togglebtn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ui class="navlinks">
+                        <div class="btn_Main">
+                        <li><a href="activegangs.html" class="btn active">Active Gangs</a></li>
+                        <li><a href="./Gangs/Usgandu/Index/Search.html" class="btn active">Interraction</a></li>
+                        <li><a href="#" class="btn active">Arrest</a></li>
+                        <li><a href="#" class="btn active">Operation</a></li>
+                        <li><a href="#" class="btn active">Events</a></li>
+                        <li><a href="#" class="btn active">Statistics</a></li>
+                    </ui>
+                </div>
+                </nav>
+            </header>
+            <div class="container">
+                <div class="hero-pic">
+                    <img src="Police.jpg" alt="" srcset="profile pic">
+                </div>
+                <div class="hero-text">
+                    <h5>Goals <span class="input"></span></h5>
+                    <h1>RR HV</h1>
+                    <p>
+                        police special team has intensified efforts to target criminal gangs operating within communities.
+     These specialized units are trained to tackle organized crime, focusing on dismantling gang networks, apprehending key leaders, and reducing violence associated with gang activities. 
+     By gathering intelligence and executing strategic operations, the team works to curb illegal activities like drug trafficking, extortion, and robbery, aiming to create safer neighborhoods and restore public trust in law enforcement.
+      Their proactive approach involves collaboration with local communities and other law enforcement agencies, ensuring a comprehensive crackdown on gang-related crimes.
+                    </p>
+                    <div class="btn-group">
+                        <a href="addumap.html" class="btn active">Addu City Map</a>
+                        <a href="#" class="btn active">HV Team</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.js"></script>
+<script>
+  var togglebtn=document.querySelector(".togglebtn");
+  var nav=document.querySelector(".navlinks");
+  var links=document.querySelector(".navlinks li");
+
+  togglebtn.addEventListener("click", function(){
+    this.classList.toggle("click");
+    nav.classList.toggle("open");
+  })
+
+
+  var typed=new Typed(".input",{
+    strings:["Target criminal gangs operating within communities"],
+    typedSpeed:70,
+    backSpeed:45,
+    loop:true
+  })
+</script>
+
+</body>
+</html>

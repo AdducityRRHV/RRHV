@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Filter by Name</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-image: url(cover1.jpg);
+      
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .search-container input {
+      padding: 10px;
+      font-size: 16px;
+      width: 500%;
+      max-width: 300px;
+      margin-bottom: 20px;
+    }
+
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-content: center;
+    }
+
+    .image-gallery img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .image-item {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="search-container">
+    <input type="text" id="search-bar" placeholder="RR HV -Interraction" onkeyup="filterImages()">
+  </div>
+ 
+  <div class="image-gallery">
+    <div class="image-item" data-name="Abdhul Ghany Ali A450709 Usgandu">
+      <img src="../Active Members/Abdhul Ghany Ali A450709.jpg" alt="Ghany">
+    </div>
+    <div class="image-item" data-name="Abdhulla Auzam A275080 Usgandu">
+      <img src="../Active Members/Abdhulla Auzam A275080.jpg" alt="Abdhulla Auzam A275080 ">
+    </div>
+    <div class="image-item" data-name="Abdul Basith Abbas A276759 Usgandu">
+      <img src="../Active Members/Abdul Basith Abbas A276759.jpg" alt="Abdul Basith Abbas A276759">
+    </div>
+    <div class="image-item" data-name="Ahmed Asjau A398883 Usgandu">
+      <img src="../Active Members/Ahmed Asjau A398883.jpg" alt="Ahmed Asjau A398883.jpg">
+    </div>
+    <div class="image-item" data-name="Ahmed Dhai Shahidh A359802 Usgandu">
+      <img src="../Active Members/Ahmed Dhai Shahidh A359802.jpg" alt="Ahmed Dhai Shahidh A359802">
+    </div>
+    <div class="image-item" data-name="Ahmed Hubaab A329566 Usgandu">
+      <img src="../Active Members/Ahmed Hubaab A329566.jpg" alt="Ahmed Hubaab A329566">
+    </div>
+    <div class="image-item" data-name="Ahmed Ibrahim A423264 Usgandu">
+      <img src="../Active Members/Ahmed Ibrahim A423264.jpg" alt="Ahmed Ibrahim A423264">
+    </div>
+    <div class="image-item" data-name="Ahmed Jinaan A364076 Usgandu">
+      <img src="../Active Members/Ahmed Jinaan A364076.jpg" alt="Ahmed Jinaan A364076">
+    </div>
+    <div class="image-item" data-name="AHmed Leewaan Mohamed A277211 Usgandu">
+      <img src="../Active Members/AHmed Leewaan Mohamed A277211.jpg" alt="AHmed Leewaan Mohamed A277211">
+    </div>
+    <div class="image-item" data-name="Ahmed Maaz Rasheedh A397399 Usgandu">
+      <img src="../Active Members/Ahmed Maaz Rasheedh A397399.jpg" alt="Ahmed Maaz Rasheedh A397399">
+    </div>
+    <div class="image-item" data-name="Ahmed Mohamed A296612 Usgandu">
+      <img src="../Active Members/Ahmed Mohamed A296612.jpg" alt="Ahmed Mohamed A296612">
+    </div>
+    <div class="image-item" data-name="Ahmed Nazim A021298 Mylo">
+      <img src="../Active Members/Ahmed Nazim A021298.jpg" alt="Ahmed Nazim A021298">
+    </div>
+
+    <div class="image-item" data-name="Ahmed Thaif A296555 Usgandu">
+      <img src="../Active Members/Ahmed Thaif A296555.jpg" alt="Ahmed Thaif A296555">
+    </div>
+    <div class="image-item" data-name="Ali Ahmed A306106 Skoop">
+      <img src="../Active Members/Ali Ahmed A306106.jpg" alt="Ali Ahmed A306106">
+    </div>
+  </div>
+
+  <script>
+    function filterImages() {
+      const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+      const images = document.querySelectorAll('.image-item');
+
+      images.forEach(image => {
+        const imageName = image.getAttribute('data-name').toLowerCase();
+        if (imageName.includes(searchTerm)) {
+          image.style.display = 'block';
+        } else {
+          image.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
+
