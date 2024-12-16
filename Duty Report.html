@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adducity Rapid Repid Response & High Visibility-Duty Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #777777;
+        }
+        .report-container {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #000;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            text-decoration: underline;
+        }
+        label {
+            font-weight: bold;
+            text-decoration: underline;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 80px;
+        }
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <h1>Adducity Rapid Repid Response & High Visibility-Duty Report</h1>
+        <form id="dutyReportForm">
+            <label for="startTime">Start Time</label>
+            <input type="time" id="startTime" name="startTime" required>
+
+            <label for="endTime">End Time</label>
+            <input type="time" id="endTime" name="endTime" required>
+
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+
+            <label>Duty Area</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="dutyArea" value="S.Hithadhoo"> S. Hithadhoo</label>
+                <label><input type="checkbox" name="dutyArea" value="S.Feydhoo"> S. Feydhoo</label>
+                <label><input type="checkbox" name="dutyArea" value="S.Maradhoo"> S. Maradhoo</label>
+                <label><input type="checkbox" name="dutyArea" value="S.MaradhooFeydhoo"> S. Maradhoo Feydhoo</label>
+                <label><input type="checkbox" name="dutyArea" value="Hulhumeedhoo"> Hulhumeedhoo</label>
+            </div>
+
+            <label for="teamLeader">Team Leader</label>
+            <select id="teamLeader" name="teamLeader" required>
+                <option value="">Select Team Leader</option>
+                <option value="leader1">3782</option>
+                <option value="leader2">5637</option>
+                <option value="leader2">5665</option>
+                <option value="leader2">5932</option>
+                <option value="leader2">5928</option>
+                <option value="leader2">6274</option>
+            </select>
+
+            <label for="officers">Officers</label>
+            <input type="text" id="officers" name="officers" required>
+
+            <label for="dutyRelease">Duty Release</label>
+            <input type="text" id="dutyRelease" name="dutyRelease" required>
+
+            <label for="medicalLeave">Medical Leave</label>
+            <input type="text" id="medicalLeave" name="medicalLeave">
+
+            <label for="annualLeave">Annual Leave</label>
+            <input type="text" id="annualLeave" name="annualLeave">
+
+            <label for="officialLeave">Official Leave</label>
+            <input type="text" id="officialLeave" name="officialLeave">
+
+            <label for="locationChecks">Location Checks</label>
+            <input type="number" id="locationChecks" name="locationChecks">
+
+            <label for="footPatrol">Foot Patrol</label>
+            <input type="number" id="footPatrol" name="footPatrol">
+
+            <label for="personChecks">Person Checks</label>
+            <input type="number" id="personChecks" name="personChecks">
+
+            <label for="detention">04hr Detention</label>
+            <input type="number" id="detention" name="detention">
+
+            <label for="arrest">Arrest</label>
+            <input type="number" id="arrest" name="arrest">
+
+            <label for="vehicleChecks">Vehicle Checks</label>
+            <input type="number" id="vehicleChecks" name="vehicleChecks">
+
+            <label for="vehicleTow">Vehicle Tow</label>
+            <input type="number" id="vehicleTow" name="vehicleTow">
+
+            <label for="notes">Other Notes</label>
+            <textarea id="notes" name="notes"></textarea>
+
+            <button type="button" class="btn" onclick="generatePDF()">Generate PDF</button>
+        </form>
+        <div class="footer">END DUTY</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const form = document.getElementById('dutyReportForm');
+            const formData = new FormData(form);
+
+            let y = 10;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Daily Duty Report', 105, y, { align: 'center' });
+
+            formData.forEach((value, key) => {
+                y += 10;
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${key}:`, 10, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${value}`, 50, y);
+            });
+
+            doc.save('Daily_Duty_Report.pdf');
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <script>
+        function generatePDF() {
+            const element = document.querySelector('.report-container'); // Select the entire report container
+            const options = {
+                margin: 0.5,
+                filename: 'Daily_Duty_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(element).save();
+        }
+    </script>
+    
+</body>
+</html>
