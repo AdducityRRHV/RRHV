@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Database - View Entries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkred;
+        }
+
+        .clear-button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .clear-button:hover {
+            background-color: #45a049;
+        }
+
+        .export-button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .export-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <!-- Import jsPDF and autoTable libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <h1>Saved Entries</h1>
+    <button class="clear-button" id="clear-all">Clear All Entries</button>
+    <button class="export-button" id="export-pdf">Export to PDF</button>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Location</th>
+                <th>Check</th>
+                <th>Foot Patrol</th>
+                <th>Interaction</th>
+                <th>Arrest</th>
+                <th>Vehicle Check</th>
+                <th>Tow Vehicles</th>
+                <th>Events</th>
+                <th>Operation</th>
+                <th>Area</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        window.onload = function() {
+            const savedData = JSON.parse(localStorage.getItem('entries')) || [];
+
+            const table = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+
+            savedData.forEach((entry, index) => {
+                const row = table.insertRow();
+
+                Object.values(entry).forEach((value, colIndex) => {
+                    const cell = row.insertCell(colIndex);
+                    cell.textContent = value;
+                });
+
+                // Add Delete button for each row
+                const deleteCell = row.insertCell(Object.values(entry).length);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function() {
+                    deleteEntry(index);
+                };
+                deleteCell.appendChild(deleteButton);
+            });
+
+            // Clear All Entries button functionality
+            document.getElementById('clear-all').onclick = function() {
+                if (confirm('Are you sure you want to clear all entries?')) {
+                    localStorage.removeItem('entries');
+                    location.reload(); // Reload to reflect changes
+                }
+            };
+
+            // Export to PDF functionality
+            document.getElementById('export-pdf').onclick = function() {
+                exportToPDF(savedData);
+            };
+        };
+
+        // Delete individual entry
+        function deleteEntry(index) {
+            const savedData = JSON.parse(localStorage.getItem('entries')) || [];
+            savedData.splice(index, 1); // Remove the entry at the specified index
+            localStorage.setItem('entries', JSON.stringify(savedData));
+            location.reload(); // Reload to reflect changes
+        }
+
+        // Export the table data to PDF
+        function exportToPDF(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(12);
+            doc.text("Saved Entries", 14, 10);
+            
+            // Set the headers and data for the table
+            const headers = ['Month', 'Location', 'Check', 'Foot Patrol', 'Interaction', 'Arrest', 'Vehicle Check', 'Tow Vehicles', 'Events', 'Operation', 'Area'];
+            const body = data.map(entry => Object.values(entry));
+
+            doc.autoTable({
+                head: [headers],
+                body: body,
+                startY: 20, // Set where the table starts on the PDF page
+                margin: { horizontal: 10 },
+            });
+
+            // Save the PDF file with the name "entries.pdf"
+            doc.save('entries.pdf');
+        }
+    </script>
+</body>
+</html>
