@@ -52,7 +52,7 @@ nav .togglebtn{
 }
 nav .togglebtn span{
     display: block;
-    background-color: #007ced;
+    background-color: #ff4747;
     margin: 5px 0px;
     width: 100%;
     height: 3px;
@@ -102,7 +102,7 @@ padding-top: 4rem;
     font-size: 14px;
 }
 .hero-text h5 span{
-    color: #007ced;
+    color: #ff4747;
     font-size: 16px;
 }
 .hero-text h1 {
@@ -131,7 +131,7 @@ padding-top: 4rem;
     box-shadow:  010px 10px -8px rgb(0 0 0 /78%);
 }
 .btn.active{
-    border-color: #007ced;
+    border-color: #ff4747;
 }
 .hero-text .social i{
     color: #e5e5e5;
