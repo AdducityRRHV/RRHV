@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR HV - Statistics Database Overview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #clearBtn {
+            background-color: #f44336;
+        }
+        #clearBtn:hover {
+            background-color: #e53935;
+        }
+        .filters {
+            margin-bottom: 20px;
+        }
+        .filters input {
+            padding: 8px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>RR HV - Statistics Database Overview</h1>
+
+    <div class="filters">
+        <input type="date" id="filterDate" placeholder="Filter by Date">
+        <input type="text" id="filterText" placeholder="Filter by Details">
+        <button id="filterBtn">Apply Filters</button>
+    </div>
+
+    <table id="databaseTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Operation</th>
+                <th>Details</th>
+                <th>Location Check</th>
+                <th>Interaction</th>
+                <th>Arrest</th>
+                <th>4hrs Detention</th>
+                <th>Vehicle Check</th>
+                <th>Tow Vehicles</th>
+                <th>Events</th>
+                <th>Area</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3">Subtotals</th>
+                <th id="subtotalLocationCheck">0</th>
+                <th id="subtotalInteraction">0</th>
+                <th id="subtotalArrest">0</th>
+                <th id="subtotalDetention">0</th>
+                <th id="subtotalVehicleCheck">0</th>
+                <th id="subtotalTowVehicles">0</th>
+                <th colspan="2"></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button id="clearBtn">Clear All Data</button>
+    <button id="exportBtn">Export as PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        // Function to load data from localStorage and populate the table
+        function loadData() {
+            const dataEntries = JSON.parse(localStorage.getItem('dataEntries')) || [];
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = '';
+
+            let subtotalLocationCheck = 0;
+            let subtotalInteraction = 0;
+            let subtotalArrest = 0;
+            let subtotalDetention = 0;
+            let subtotalVehicleCheck = 0;
+            let subtotalTowVehicles = 0;
+
+            dataEntries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+
+                Object.values(entry).forEach(value => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const deleteCell = document.createElement('td');
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => deleteEntry(index));
+                deleteCell.appendChild(deleteBtn);
+                row.appendChild(deleteCell);
+
+                tableBody.appendChild(row);
+
+                subtotalLocationCheck += entry.locationCheck;
+                subtotalInteraction += entry.interaction;
+                subtotalArrest += entry.arrest;
+                subtotalDetention += entry.detention;
+                subtotalVehicleCheck += entry.vehicleCheck;
+                subtotalTowVehicles += entry.towVehicles;
+            });
+
+            document.getElementById("subtotalLocationCheck").textContent = subtotalLocationCheck;
+            document.getElementById("subtotalInteraction").textContent = subtotalInteraction;
+            document.getElementById("subtotalArrest").textContent = subtotalArrest;
+            document.getElementById("subtotalDetention").textContent = subtotalDetention;
+            document.getElementById("subtotalVehicleCheck").textContent = subtotalVehicleCheck;
+            document.getElementById("subtotalTowVehicles").textContent = subtotalTowVehicles;
+        }
+
+        // Function to delete an entry from localStorage
+        function deleteEntry(index) {
+            let dataEntries = JSON.parse(localStorage.getItem('dataEntries')) || [];
+            dataEntries.splice(index, 1);
+            localStorage.setItem('dataEntries', JSON.stringify(dataEntries));
+            loadData();
+        }
+
+        // Event listener for the "Clear All Data" button
+        document.getElementById("clearBtn").addEventListener("click", function() {
+            if (confirm("Are you sure you want to clear all data?")) {
+                localStorage.removeItem('dataEntries');
+                loadData();
+            }
+        });
+
+        // Apply filters for date and text
+        document.getElementById("filterBtn").addEventListener("click", function() {
+            const selectedDate = document.getElementById("filterDate").value;
+            const filterText = document.getElementById("filterText").value.toLowerCase();
+            const dataEntries = JSON.parse(localStorage.getItem('dataEntries')) || [];
+
+            const filteredEntries = dataEntries.filter(entry => {
+                const dateMatch = selectedDate ? entry.date === selectedDate : true;
+                const textMatch = filterText ? entry.details.toLowerCase().includes(filterText) : true;
+                return dateMatch && textMatch;
+            });
+
+            populateTable(filteredEntries);
+        });
+
+        // Function to populate the table with filtered data
+        function populateTable(entries) {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = '';
+
+            let subtotalLocationCheck = 0;
+            let subtotalInteraction = 0;
+            let subtotalArrest = 0;
+            let subtotalDetention = 0;
+            let subtotalVehicleCheck = 0;
+            let subtotalTowVehicles = 0;
+
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+
+                Object.values(entry).forEach(value => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const deleteCell = document.createElement('td');
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => deleteEntry(index));
+                deleteCell.appendChild(deleteBtn);
+                row.appendChild(deleteCell);
+
+                tableBody.appendChild(row);
+
+                subtotalLocationCheck += entry.locationCheck;
+                subtotalInteraction += entry.interaction;
+                subtotalArrest += entry.arrest;
+                subtotalDetention += entry.detention;
+                subtotalVehicleCheck += entry.vehicleCheck;
+                subtotalTowVehicles += entry.towVehicles;
+            });
+
+            document.getElementById("subtotalLocationCheck").textContent = subtotalLocationCheck;
+            document.getElementById("subtotalInteraction").textContent = subtotalInteraction;
+            document.getElementById("subtotalArrest").textContent = subtotalArrest;
+            document.getElementById("subtotalDetention").textContent = subtotalDetention;
+            document.getElementById("subtotalVehicleCheck").textContent = subtotalVehicleCheck;
+            document.getElementById("subtotalTowVehicles").textContent = subtotalTowVehicles;
+        }
+
+        // Simple PDF Export function using jsPDF and autoTable
+        document.getElementById("exportBtn").addEventListener("click", function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Table headers
+            const headers = ["Date", "Operation", "Details", "Location Check", "Interaction", "Arrest", "4hrs Detention", "Vehicle Check", "Tow Vehicles", "Events", "Area"];
+
+            // Prepare rows from table data
+            const rows = [];
+            const tableRows = document.querySelectorAll("#databaseTable tbody tr");
+            tableRows.forEach(row => {
+                const rowData = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                rows.push(rowData);
+            });
+
+            // Add the table to the PDF
+            doc.autoTable({
+                head: [headers],
+                body: rows,
+                startY: 20,
+                theme: 'grid'
+            });
+
+            // Add subtotal row to the PDF
+            const subtotalRow = [
+                "Subtotals", "", "", 
+                document.getElementById("subtotalLocationCheck").textContent, 
+                document.getElementById("subtotalInteraction").textContent, 
+                document.getElementById("subtotalArrest").textContent, 
+                document.getElementById("subtotalDetention").textContent, 
+                document.getElementById("subtotalVehicleCheck").textContent, 
+                document.getElementById("subtotalTowVehicles").textContent, 
+                "", ""
+            ];
+
+            doc.autoTable({
+                body: [subtotalRow],
+                startY: doc.autoTable.previous.finalY + 10,
+                theme: 'grid',
+                styles: { halign: 'center', fontStyle: 'bold' }
+            });
+
+            // Save the PDF
+            doc.save('database-overview.pdf');
+        });
+
+        // Load data when the page is loaded
+        window.onload = loadData;
+    </script>
+</body>
+</html>
