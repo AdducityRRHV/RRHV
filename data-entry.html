@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR HV Daily Data Base</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, textarea, button {
+            padding: 8px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>RR HV Database Entry Form</h1>
+    <form id="dataEntryForm">
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="operation">Operation:</label>
+        <input type="text" id="operation" name="operation" required>
+
+        <label for="details">Details:</label>
+        <textarea id="details" name="details" required></textarea>
+
+        <label for="locationCheck">Location Check:</label>
+        <input type="number" id="locationCheck" name="locationCheck" value="0">
+
+        <label for="interaction">Interaction:</label>
+        <input type="number" id="interaction" name="interaction" value="0">
+
+        <label for="arrest">Arrest:</label>
+        <input type="number" id="arrest" name="arrest" value="0">
+
+        <label for="detention">4hrs Detention:</label>
+        <input type="number" id="detention" name="detention" value="0">
+
+        <label for="vehicleCheck">Vehicle Check:</label>
+        <input type="number" id="vehicleCheck" name="vehicleCheck" value="0">
+
+        <label for="towVehicles">Tow Vehicles:</label>
+        <input type="number" id="towVehicles" name="towVehicles" value="0">
+
+        <label for="events">Events:</label>
+        <input type="text" id="events" name="events">
+
+        <label for="area">Name of Area:</label>
+        <input type="text" id="area" name="area" required>
+
+        <button type="submit">Save Entry</button>
+    </form>
+
+    <script>
+        document.getElementById("dataEntryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const entry = {
+                date: formData.get('date'),
+                operation: formData.get('operation'),
+                details: formData.get('details'),
+                locationCheck: parseInt(formData.get('locationCheck')),
+                interaction: parseInt(formData.get('interaction')),
+                arrest: parseInt(formData.get('arrest')),
+                detention: parseInt(formData.get('detention')),
+                vehicleCheck: parseInt(formData.get('vehicleCheck')),
+                towVehicles: parseInt(formData.get('towVehicles')),
+                events: formData.get('events'),
+                area: formData.get('area')
+            };
+
+            let dataEntries = JSON.parse(localStorage.getItem('dataEntries')) || [];
+            dataEntries.push(entry);
+            localStorage.setItem('dataEntries', JSON.stringify(dataEntries));
+
+            event.target.reset();
+            alert("Entry saved successfully!");
+        });
+    </script>
+</body>
+</html>
