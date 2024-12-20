@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Style Password Protected Dropdown</title>
+    <style>
+        /* Full screen setup */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2b2b2b;
+            font-family: 'Courier New', Courier, monospace;
+            color: #f2f2f2;
+        }
+
+        .container {
+            text-align: center;
+            border: 2px solid #ff0000;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1e1e1e;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        /* Style for the header */
+        h1 {
+            color: #ff0000;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .slide-bar {
+            margin-bottom: 20px;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #password {
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 18px;
+            background-color: #444;
+            border: 2px solid #ff0000;
+            color: #f2f2f2;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff0000;
+            border: none;
+            color: #f2f2f2;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+
+        .dropdown {
+            display: none;
+            margin-top: 20px;
+            border: 2px solid #ff0000;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        .dropdown ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dropdown li {
+            padding: 10px;
+            background-color: #444;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown li:hover {
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        .dropdown li:active {
+            background-color: #cc0000;
+        }
+
+        /* Custom Content */
+        .custom-content {
+            margin-top: 20px;
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        /* Make sure the container is centered and the content fits the screen */
+        .container {
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header "Data" -->
+        <h1>Data</h1>
+
+        <div class="slide-bar">
+            <input type="password" id="password" placeholder="Enter password" />
+            <button onclick="checkPassword()">Open List</button>
+        </div>
+        <div class="dropdown" id="dropdown">
+            <ul>
+                <li onclick="verifyPasswordAndRedirect('option1')">Option 1</li>
+                <li onclick="verifyPasswordAndRedirect('option2')">Option 2</li>
+                <li onclick="verifyPasswordAndRedirect('option3')">Option 3</li>
+                <li onclick="verifyPasswordAndRedirect('option4')">Option 4</li>
+                <li onclick="verifyPasswordAndRedirect('option5')">Option 5</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const enteredPassword = document.getElementById('password').value;
+            const correctPassword = "12345"; // Password for unlocking the list
+            const dropdown = document.getElementById('dropdown');
+
+            if (enteredPassword === correctPassword) {
+                // Show the dropdown only if password is correct
+                dropdown.style.display = "block"; // Show the dropdown
+            } else {
+                alert("Incorrect password. Try again!");
+            }
+        }
+
+        function verifyPasswordAndRedirect(option) {
+            const enteredPassword = prompt("Please enter the password to access this option:");
+
+            if (enteredPassword === "123456789") {
+                // Redirect based on selected option if password is correct
+                openCustomHTML(option);
+            } else {
+                alert("Incorrect password. You cannot access this option.");
+            }
+        }
+
+        function openCustomHTML(option) {
+            // Open a new custom HTML file based on the selected option
+            if (option === 'option1') {
+                window.location.href = "activegangs.html"; // Replace with your custom HTML file
+            } else if (option === 'option2') {
+                window.location.href = "activegangs.html"; // Replace with your custom HTML file
+            } else if (option === 'option3') {
+                window.location.href = "custom3.html"; // Replace with your custom HTML file
+            } else if (option === 'option4') {
+                window.location.href = "custom4.html"; // Replace with your custom HTML file
+            } else if (option === 'option5') {
+                window.location.href = "custom5.html"; // Replace with your custom HTML file
+            }
+        }
+    </script>
+</body>
+</html>
