@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criminal Style Password Protected Dropdown</title>
+    <title>RR HV</title>
+
+    <script>
+        // Redirect to the login page after 3 seconds
+        setTimeout(function() {
+            window.location.href = "index.html"; // Redirect to login page
+        }, 200000); // 3 seconds delay
+    </script>
     <style>
         /* Full screen setup */
         html, body {
@@ -130,11 +137,11 @@
         </div>
         <div class="dropdown" id="dropdown">
             <ul>
-                <li onclick="verifyPasswordAndRedirect('option1')">Option 1</li>
-                <li onclick="verifyPasswordAndRedirect('option2')">Option 2</li>
-                <li onclick="verifyPasswordAndRedirect('option3')">Option 3</li>
-                <li onclick="verifyPasswordAndRedirect('option4')">Option 4</li>
-                <li onclick="verifyPasswordAndRedirect('option5')">Option 5</li>
+                <li onclick="verifyPasswordAndRedirect('option1')">Active Ganngs</li>
+                <li onclick="verifyPasswordAndRedirect('option2')">Arrest</li>
+                <li onclick="verifyPasswordAndRedirect('option3')">Interraction</li>
+                <li onclick="verifyPasswordAndRedirect('option4')">Operation</li>
+                <li onclick="verifyPasswordAndRedirect('option5')">Photo Gallery</li>
             </ul>
         </div>
     </div>
@@ -156,7 +163,7 @@
         function verifyPasswordAndRedirect(option) {
             const enteredPassword = prompt("Please enter the password to access this option:");
 
-            if (enteredPassword === "123456789") {
+            if (enteredPassword === "1234") {
                 // Redirect based on selected option if password is correct
                 openCustomHTML(option);
             } else {
