@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Themed Gallery</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .gallery-container {
+            text-align: center;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 80%;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            background-color: #000;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .filter-buttons {
+            margin-bottom: 20px;
+            background-color: #121212;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.5);
+        }
+
+        .filter-buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            background-color: #000;
+            color: #ff0000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .filter-buttons button:hover {
+            background-color: #ff0000;
+            color: #000;
+        }
+
+        .filter-buttons button.active {
+            background-color: #ff0000;
+            color: #000;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.5);
+            background-color: #222;
+            text-align: center;
+            color: #fff;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item img:hover {
+            transform: scale(1.1);
+        }
+
+        .gallery-item.hidden {
+            display: none;
+        }
+
+        .gallery-item .caption {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery-container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search photos..." onkeyup="searchGallery()">
+        </div>
+
+        <div class="filter-buttons">
+            <button class="active" onclick="filterGallery('all')">All</button>
+            <button onclick="filterGallery('operation')">Operation</button>
+            <button onclick="filterGallery('search')">Search</button>
+            <button onclick="filterGallery('patrol')">Routing Patrol</button>
+            <button onclick="filterGallery('evidence')">Evidence</button>
+        </div>
+
+        <div class="gallery" id="gallery">
+            <div class="gallery-item operation">
+                <img src="cover1.jpg" alt="Operation 1">
+                <div class="caption">Vadde</div>
+            </div>
+            <div class="gallery-item search">
+                <img src="cover1.jpg" alt="Search 1">
+                <div class="caption">Shaahil</div>
+            </div>
+            <div class="gallery-item patrol">
+                <img src="cover1.jpg" alt="Routing Patrol 1">
+                <div class="caption">Torey</div>
+            </div>
+            <div class="gallery-item evidence">
+                <img src="Police.jpg" alt="Evidence 1">
+                <div class="caption">Evidence 1</div>
+            </div>
+            <div class="gallery-item operation">
+                <img src="cover1.jpg" alt="Operation 2">
+                <div class="caption">Operation 2</div>
+            </div>
+            <div class="gallery-item search">
+                <img src="cover1.jpg" alt="Search 2">
+                <div class="caption">Search 2</div>
+            </div>
+            <div class="gallery-item patrol">
+                <img src="cover1.jpg" alt="Routing Patrol 2">
+                <div class="caption">Routing Patrol 2</div>
+            </div>
+            <div class="gallery-item evidence">
+                <img src="cover1.jpg" alt="Evidence 2">
+                <div class="caption">Evidence 2</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterGallery(category) {
+            const buttons = document.querySelectorAll('.filter-buttons button');
+            const items = document.querySelectorAll('.gallery-item');
+
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+
+            items.forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function searchGallery() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.gallery-item');
+
+            items.forEach(item => {
+                const caption = item.querySelector('.caption').textContent.toLowerCase();
+                if (caption.includes(input)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
