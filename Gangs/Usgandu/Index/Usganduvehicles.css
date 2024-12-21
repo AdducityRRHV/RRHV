@@ -10,12 +10,15 @@ body {
 }
 
 body{
-    background-image: url(cover1.jpg);
-    display: flex;
+    justify-content: center;
     align-items: center;
     height: 100vh;
     background-size: cover;
-    background-position: center;
+    font-family: 'Courier New', Courier, monospace;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            background-image: url('https://www.transparenttextures.com/patterns/black-linen.png'); /* Textured background */
 }
 
 .slider-wrapper {
