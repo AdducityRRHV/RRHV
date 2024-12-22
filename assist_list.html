@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assist List</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, select, textarea {
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .delete-btn {
+      padding: 5px 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    .search-bar {
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+
+    .back-btn:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      word-wrap: break-word;
+      max-width: 200px; /* Limit column width */
+    }
+
+    /* Responsive design for smaller screens */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      table th, table td {
+        padding: 8px;
+      }
+
+      button, .back-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="assistListContainer">
+    <h1>Assist List</h1>
+
+    <label for="searchBar">Search by Assist Details:</label>
+    <input type="text" id="searchBar" class="search-bar" placeholder="Search assist details...">
+
+    <label for="stationFilter">Filter by Station:</label>
+    <select id="stationFilter">
+      <option value="all">All Stations</option>
+      <option value="station1">Station 1</option>
+      <option value="station2">Station 2</option>
+      <option value="station3">Station 3</option>
+    </select>
+
+    <table id="assistTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Station</th>
+          <th>Assist Details</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here dynamically -->
+      </tbody>
+    </table>
+
+    <button id="exportPdfBtn">Export to PDF</button>
+    <button class="back-btn" id="backToFormBtn">Go Back to Entry Form</button>
+  </div>
+
+  <!-- Include jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    // Initialize assist data
+    const getAssistData = () => JSON.parse(localStorage.getItem('assistData')) || [];
+
+    // Show assist list view
+    function showAssistList() {
+      document.getElementById('assistListContainer').style.display = 'block';
+      renderAssistData();
+    }
+
+    // Render assist data in table
+    function renderAssistData() {
+      const assistData = getAssistData();
+      const filter = document.getElementById('stationFilter').value;
+      const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+      const tableBody = document.getElementById('assistTable').getElementsByTagName('tbody')[0];
+      tableBody.innerHTML = '';
+
+      assistData.forEach((item, index) => {
+        if (
+          (filter === 'all' || item.station === filter) &&
+          (item.assistDetails.toLowerCase().includes(searchQuery))
+        ) {
+          const row = tableBody.insertRow();
+          row.insertCell(0).textContent = item.date;
+          row.insertCell(1).textContent = item.station;
+          row.insertCell(2).textContent = item.assistDetails;
+
+          const deleteCell = row.insertCell(3);
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.classList.add('delete-btn');
+          deleteBtn.addEventListener('click', function() {
+            deleteAssistData(index);
+          });
+          deleteCell.appendChild(deleteBtn);
+        }
+      });
+    }
+
+    // Delete assist data
+    function deleteAssistData(index) {
+      const assistData = getAssistData();
+      assistData.splice(index, 1);
+      localStorage.setItem('assistData', JSON.stringify(assistData));
+      renderAssistData();
+    }
+
+    // Handle search filter
+    document.getElementById('searchBar').addEventListener('input', function() {
+      renderAssistData();
+    });
+
+    // Handle station filter
+    document.getElementById('stationFilter').addEventListener('change', function() {
+      renderAssistData();
+    });
+
+    // Handle go back to entry form button
+    document.getElementById('backToFormBtn').addEventListener('click', function() {
+      window.location.href = 'indexA.html'; // Navigate to entry form page
+    });
+
+    // Handle PDF export
+    document.getElementById('exportPdfBtn').addEventListener('click', function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape', 'mm', 'a4');
+      const assistData = getAssistData();
+      const tableData = assistData.map(item => [item.date, item.station, item.assistDetails]);
+
+      doc.setFontSize(18);
+      doc.text('Police Station Assist List', 105, 10, null, null, 'center');
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 128, 0); // Green for header
+      doc.text('Date', 10, 30);
+      doc.text('Station', 60, 30);
+      doc.text('Assist Details', 120, 30);
+
+      let y = 40;
+      tableData.forEach(row => {
+        doc.setTextColor(0, 0, 0); // Black for row text
+        doc.text(row[0], 10, y);
+        doc.text(row[1], 60, y);
+        doc.text(row[2], 120, y, {maxWidth: 150});
+        y += 10;
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+
+      doc.save('assist_list.pdf');
+    });
+
+    // Show the assist list view on page load
+    showAssistList();
+  </script>
+</body>
+</html>
