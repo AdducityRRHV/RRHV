@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR HV - Station Assist Daily Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .filter-section {
+            margin: 20px 0;
+        }
+
+        #assist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #assist-table th, #assist-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #assist-table th {
+            background-color: #4c53af;
+            color: white;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .table-container {
+            display: block;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RRHV - Station Assist Daily Database</h1>
+            <a href="#" class="button" onclick="toggleForm()">Add New Record</a>
+            <a href="#" class="button" onclick="exportToPDF()">Export to PDF</a>
+        </header>
+
+        <!-- Data Entry Form -->
+        <div class="form-container" id="form-container">
+            <h2>Enter New Assist Record</h2>
+            <form id="assist-form">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+
+                <label for="station">Select Station:</label>
+                <select id="station" name="station" required>
+                    <option value="Hithadhoo">Hithadhoo</option>
+                    <option value="Gan">Gan</option>
+                    <option value="Hulhumeedhoo">Hulhumeedhoo</option>
+                    <!-- Add more stations as needed -->
+                </select>
+
+                <label for="assist-details">Assist Details:</label>
+                <textarea id="assist-details" name="assist-details" required></textarea>
+
+                <button type="submit" class="button">Submit</button>
+                <a href="#" class="button" onclick="toggleForm()">Cancel</a>
+            </form>
+        </div>
+
+        <!-- Table to display data -->
+        <div class="table-container" id="table-container">
+            <div class="filter-section">
+                <label for="station-filter">Filter by Station:</label>
+                <select id="station-filter">
+                    <option value="">All Stations</option>
+                    <option value="Hithadhoo">Hithadhoo</option>
+                    <option value="Gan">Gan</option>
+                    <option value="Hulhumeedhoo">Hulhumeedhoo</option>
+                    <!-- Add more stations as needed -->
+                </select>
+            </div>
+
+            <table id="assist-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Station</th>
+                        <th>Assist Details</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assist-table-body">
+                    <!-- Example rows (these should be dynamically filled with data) -->
+                    <tr>
+                        <td>2024-12-22</td>
+                        <td>Station 1</td>
+                        <td>Assisted with traffic control</td>
+                        <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                    <tr>
+                        <td>2024-12-21</td>
+                        <td>Station 2</td>
+                        <td>Assisted in emergency response</td>
+                        <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // Toggle between table view and form view
+        function toggleForm() {
+            const formContainer = document.getElementById('form-container');
+            const tableContainer = document.getElementById('table-container');
+            formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+            tableContainer.style.display = tableContainer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // JavaScript for filtering records
+        document.getElementById('station-filter').addEventListener('change', function() {
+            let filterValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#assist-table tbody tr');
+            rows.forEach(row => {
+                let station = row.cells[1].textContent.toLowerCase();
+                if (filterValue === "" || station.includes(filterValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('assist-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get form values
+            const date = document.getElementById('date').value;
+            const station = document.getElementById('station').value;
+            const assistDetails = document.getElementById('assist-details').value;
+
+            // Add new row to the table
+            const tableBody = document.getElementById('assist-table-body');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${date}</td>
+                <td>${station}</td>
+                <td>${assistDetails}</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            `;
+            tableBody.appendChild(newRow);
+
+            // Reset form and toggle back to table view
+            document.getElementById('assist-form').reset();
+            toggleForm();
+        });
+
+        // Delete row function
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        // Export the table data to a PDF file with color styles (without "Actions" column) and A4 Landscape
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape', 'mm', 'a4'); // Set to landscape orientation
+
+            const table = document.getElementById('assist-table');
+            let y = 20; // Starting Y position for the table
+            const x = 10; // X position
+
+            // Set title and style
+            doc.setFontSize(16);
+            doc.setTextColor(0, 51, 102); // Dark blue color for the title
+            doc.text('RRHV - Station Assist Daily Database', x, y);
+            y += 10;
+
+            // Table Header Styling (excluding Actions column)
+            doc.setFontSize(12);
+            doc.setTextColor(255, 255, 255); // White text color for header
+            doc.setFillColor(76, 175, 80); // Green background color for header
+            doc.rect(x, y, 280, 10, 'F'); // Header background (full width for landscape)
+            doc.text('Date', x + 5, y + 7);
+            doc.text('Station', x + 30, y + 7);
+            doc.text('Assist Details', x + 130, y + 7);
+            y += 10;
+
+            // Table Rows Styling (excluding Actions column)
+            const rows = table.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                if (index > 0) { // Skip header row
+                    const cols = row.querySelectorAll('td');
+                    const date = cols[0].textContent;
+                    const station = cols[1].textContent;
+                    const details = cols[2].textContent;
+
+                    // Set alternating row colors
+                    const rowColor = index % 2 === 0 ? [245, 245, 245] : [255, 255, 255]; // Light gray for even rows
+                    doc.setFillColor(...rowColor);
+                    doc.rect(x, y, 280, 10, 'F'); // Full width for landscape
+                    doc.setTextColor(0, 0, 0); // Black text color
+                    doc.text(date, x + 5, y + 7);
+                    doc.text(station, x + 40, y + 7);
+                    doc.text(details, x + 70, y + 7);
+                    y += 10;
+                }
+            });
+
+            doc.save('assist_records_landscape.pdf');
+        }
+    </script>
+</body>
+</html>
