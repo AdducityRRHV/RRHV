@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRHV - Station Assist Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label, input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 150px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RRHV - Station Assist Records</h1>
+        <form id="assistForm">
+            <label for="date">Date:</label>
+            <input type="date" id="date" required>
+
+            <label for="station">Select Station:</label>
+            <select id="station" required>
+                <option value="Station1">Station 1</option>
+                <option value="Station2">Station 2</option>
+                <option value="Station3">Station 3</option>
+                <option value="Station4">Station 4</option>
+            </select>
+
+            <label for="assistDetails">Assist Details:</label>
+            <textarea id="assistDetails" required></textarea>
+
+            <button type="submit">Submit Record</button>
+        </form>
+        <h3><a href="records.html">View all assist records</a></h3>
+    </div>
+
+    <script>
+        document.getElementById('assistForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get form data
+            const date = document.getElementById('date').value;
+            const station = document.getElementById('station').value;
+            const assistDetails = document.getElementById('assistDetails').value;
+
+            // Create a new assist record
+            const newRecord = {
+                date,
+                station,
+                assistDetails
+            };
+
+            // Retrieve existing records from localStorage
+            let assistRecords = JSON.parse(localStorage.getItem('assistRecords')) || [];
+
+            // Add the new record to the list
+            assistRecords.push(newRecord);
+
+            // Save the updated list back to localStorage
+            localStorage.setItem('assistRecords', JSON.stringify(assistRecords));
+
+            // Clear the form fields
+            document.getElementById('assistForm').reset();
+
+            // Alert to inform user
+            alert('Assist record submitted successfully!');
+        });
+    </script>
+</body>
+</html>
