@@ -3,285 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RR HV - Station Assist Daily Database</title>
+    <title>RR&HV - Assist Database</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
             padding: 20px;
         }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: #fff;
-            padding: 15px;
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* Ensure no horizontal scrolling */
         }
-
-        header h1 {
-            margin: 0;
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-
-        .button {
+        input, select, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
+            border: none;
+            cursor: pointer;
         }
-
-        .filter-section {
-            margin: 20px 0;
+        button:hover {
+            background-color: #45a049;
         }
-
-        #assist-table {
+        table {
             width: 100%;
+            margin-top: 20px;
             border-collapse: collapse;
         }
-
-        #assist-table th, #assist-table td {
+        table, th, td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
+            word-wrap: break-word;
         }
-
-        #assist-table th {
-            background-color: #4c53af;
-            color: white;
+        th {
+            background-color: #f2f2f2;
         }
-
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        form label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        form input, form select, form textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        form button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .form-container {
-            display: none;
-        }
-
-        .table-container {
-            display: block;
-        }
-
-        .delete-button {
+        .deleteBtn {
+            padding: 5px 10px;
             background-color: #f44336;
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            border: none;
             cursor: pointer;
+            border-radius: 4px;
         }
-
+        .deleteBtn:hover {
+            background-color: #d32f2f;
+        }
+        /* Smooth transition for table visibility */
+        #assistTable {
+            display: none;
+            transition: opacity 1s ease;
+        }
+        #assistTable.show {
+            display: table;
+            opacity: 1;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 20px;
+            }
+            .container {
+                padding: 15px;
+            }
+            input, select, textarea, button {
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
+            .container {
+                padding: 10px;
+            }
+            table, th, td {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <header>
-            <h1>RRHV - Station Assist Daily Database</h1>
-            <a href="#" class="button" onclick="toggleForm()">Add New Record</a>
-            <a href="#" class="button" onclick="exportToPDF()">Export to PDF</a>
-        </header>
+        <h1>RR&HV - Assist Daily Database</h1>
 
-        <!-- Data Entry Form -->
-        <div class="form-container" id="form-container">
-            <h2>Enter New Assist Record</h2>
-            <form id="assist-form">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" required>
-
-                <label for="station">Select Station:</label>
-                <select id="station" name="station" required>
-                    <option value="Hithadhoo">Hithadhoo</option>
-                    <option value="Gan">Gan</option>
-                    <option value="Hulhumeedhoo">Hulhumeedhoo</option>
-                    <!-- Add more stations as needed -->
-                </select>
-
-                <label for="assist-details">Assist Details:</label>
-                <textarea id="assist-details" name="assist-details" required></textarea>
-
-                <button type="submit" class="button">Submit</button>
-                <a href="#" class="button" onclick="toggleForm()">Cancel</a>
-            </form>
+        <!-- Station Filter -->
+        <div>
+            <label for="stationFilter">Filter by Station:</label>
+            <select id="stationFilter">
+                <option value="">All Stations</option>
+                <option value="Hithadhoo">Hithadhoo</option>
+                <option value="Gan">Gan</option>
+                <option value="Hulhumeedhoo">Hulhumeedhoo</option>
+            </select>
         </div>
+        
+        <form id="assistForm">
+            <input type="date" id="date" required>
+            <select id="station" required>
+                <option value="Hithadhoo">Hithadhoo</option>
+                <option value="Gan">Gan</option>
+                <option value="Hulhumeedhoo">Hulhumeedhoo</option>
+            </select>
+            <textarea id="assistDetails" required placeholder="Enter Assist Details " rows="10"></textarea>
+            <button type="submit">Add Assist</button>
+        </form>
 
-        <!-- Table to display data -->
-        <div class="table-container" id="table-container">
-            <div class="filter-section">
-                <label for="station-filter">Filter by Station:</label>
-                <select id="station-filter">
-                    <option value="">All Stations</option>
-                    <option value="Hithadhoo">Hithadhoo</option>
-                    <option value="Gan">Gan</option>
-                    <option value="Hulhumeedhoo">Hulhumeedhoo</option>
-                    <!-- Add more stations as needed -->
-                </select>
-            </div>
+        <!-- Button to toggle assist table visibility -->
+        <button id="toggleBtn">Show Assists</button>
 
-            <table id="assist-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Station</th>
-                        <th>Assist Details</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="assist-table-body">
-                    <!-- Example rows (these should be dynamically filled with data) -->
-                    <tr>
-                        <td>2024-12-22</td>
-                        <td>Station 1</td>
-                        <td>Assisted with traffic control</td>
-                        <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>2024-12-21</td>
-                        <td>Station 2</td>
-                        <td>Assisted in emergency response</td>
-                        <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Assist Table -->
+        <table id="assistTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Station</th>
+                    <th>Assist Details</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button id="exportBtn">Export to PDF</button>
     </div>
 
+    <!-- Firebase and jsPDF scripts for v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        // Toggle between table view and form view
-        function toggleForm() {
-            const formContainer = document.getElementById('form-container');
-            const tableContainer = document.getElementById('table-container');
-            formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-            tableContainer.style.display = tableContainer.style.display === 'none' ? 'block' : 'none';
-        }
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfmeLdUiQk0La30Tji86vISEQZa7jaBVI",
+            authDomain: "police-station-assist-data.firebaseapp.com",
+            databaseURL: "https://police-station-assist-data-default-rtdb.firebaseio.com",  // Correct database URL
+            projectId: "police-station-assist-data",
+            storageBucket: "police-station-assist-data.firebasestorage.app",
+            messagingSenderId: "985910637850",
+            appId: "1:985910637850:web:5224051205a4e055e9a8a3"
+        };
 
-        // JavaScript for filtering records
-        document.getElementById('station-filter').addEventListener('change', function() {
-            let filterValue = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#assist-table tbody tr');
-            rows.forEach(row => {
-                let station = row.cells[1].textContent.toLowerCase();
-                if (filterValue === "" || station.includes(filterValue)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const assistsRef = database.ref('assists');
 
-        // Handle form submission
-        document.getElementById('assist-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            // Get form values
+        // Add Assist Data to Firebase
+        document.getElementById('assistForm').addEventListener('submit', function (e) {
+            e.preventDefault();
             const date = document.getElementById('date').value;
             const station = document.getElementById('station').value;
-            const assistDetails = document.getElementById('assist-details').value;
+            const assistDetails = document.getElementById('assistDetails').value;
 
-            // Add new row to the table
-            const tableBody = document.getElementById('assist-table-body');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${date}</td>
-                <td>${station}</td>
-                <td>${assistDetails}</td>
-                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
-            `;
-            tableBody.appendChild(newRow);
-
-            // Reset form and toggle back to table view
-            document.getElementById('assist-form').reset();
-            toggleForm();
+            assistsRef.push().set({ date, station, assistDetails });
+            loadData();
         });
 
-        // Delete row function
-        function deleteRow(button) {
-            const row = button.closest('tr');
-            row.remove();
-        }
+        // Load Data from Firebase and Display
+        function loadData(stationFilter = '') {
+            assistsRef.once('value', function (snapshot) {
+                const tbody = document.getElementById('assistTable').getElementsByTagName('tbody')[0];
+                tbody.innerHTML = ''; // Clear the table first
 
-        // Export the table data to a PDF file with color styles (without "Actions" column) and A4 Landscape
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape', 'mm', 'a4'); // Set to landscape orientation
-
-            const table = document.getElementById('assist-table');
-            let y = 20; // Starting Y position for the table
-            const x = 10; // X position
-
-            // Set title and style
-            doc.setFontSize(16);
-            doc.setTextColor(0, 51, 102); // Dark blue color for the title
-            doc.text('RRHV - Station Assist Daily Database', x, y);
-            y += 10;
-
-            // Table Header Styling (excluding Actions column)
-            doc.setFontSize(12);
-            doc.setTextColor(255, 255, 255); // White text color for header
-            doc.setFillColor(76, 175, 80); // Green background color for header
-            doc.rect(x, y, 280, 10, 'F'); // Header background (full width for landscape)
-            doc.text('Date', x + 5, y + 7);
-            doc.text('Station', x + 30, y + 7);
-            doc.text('Assist Details', x + 130, y + 7);
-            y += 10;
-
-            // Table Rows Styling (excluding Actions column)
-            const rows = table.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                if (index > 0) { // Skip header row
-                    const cols = row.querySelectorAll('td');
-                    const date = cols[0].textContent;
-                    const station = cols[1].textContent;
-                    const details = cols[2].textContent;
-
-                    // Set alternating row colors
-                    const rowColor = index % 2 === 0 ? [245, 245, 245] : [255, 255, 255]; // Light gray for even rows
-                    doc.setFillColor(...rowColor);
-                    doc.rect(x, y, 280, 10, 'F'); // Full width for landscape
-                    doc.setTextColor(0, 0, 0); // Black text color
-                    doc.text(date, x + 5, y + 7);
-                    doc.text(station, x + 40, y + 7);
-                    doc.text(details, x + 70, y + 7);
-                    y += 10;
-                }
+                snapshot.forEach(function (childSnapshot) {
+                    const data = childSnapshot.val();
+                    if (stationFilter === '' || data.station === stationFilter) {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = data.date;
+                        row.insertCell(1).textContent = data.station;
+                        row.insertCell(2).textContent = data.assistDetails;
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.classList.add('deleteBtn');
+                        deleteBtn.onclick = function () {
+                            // Prompt for password before deletion
+                            const password = prompt("Enter password to delete:");
+                            if (password === "123") {
+                                assistsRef.child(childSnapshot.key).remove();
+                                loadData();
+                            } else {
+                                alert("Incorrect password. Unable to delete.");
+                            }
+                        };
+                        row.insertCell(3).appendChild(deleteBtn);
+                    }
+                });
             });
-
-            doc.save('assist_records_landscape.pdf');
         }
+
+        // Filter data by station
+        document.getElementById('stationFilter').addEventListener('change', function () {
+            const selectedStation = this.value;
+            loadData(selectedStation);
+        });
+
+        // Toggle table visibility with password prompt
+        document.getElementById('toggleBtn').addEventListener('click', function () {
+            const password = prompt("Enter password to show assists:");
+            if (password === "123") {
+                const table = document.getElementById('assistTable');
+                table.classList.toggle('show');
+                if (table.classList.contains('show')) {
+                    this.textContent = 'Hide Assists';
+                } else {
+                    this.textContent = 'Show Assists';
+                }
+            } else {
+                alert("Incorrect password. Unable to show assists.");
+            }
+        });
+
+        // Export Data to PDF (Formatted like a statement)
+        document.getElementById('exportBtn').addEventListener('click', function () {
+            // Check if all fields are filled
+            const date = document.getElementById('date').value;
+            const station = document.getElementById('station').value;
+            const assistDetails = document.getElementById('assistDetails').value;
+
+            if (!date || !station || !assistDetails) {
+                alert("Please fill in all fields before exporting to PDF.");
+                return; // Prevent PDF export if any field is empty
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add Title
+            doc.setFontSize(18);
+            doc.text("Rapid Response & High Visibility Assist Daily Report(AdduCity)", 10, 10);
+            
+            // Add Table Headers
+            doc.setFontSize(12);
+            doc.text("Date", 10, 20);
+            doc.text("Station", 40, 20);
+            doc.text("Assist Details", 100, 20);
+            
+            // Add data from Firebase to PDF
+            let y = 30;
+            assistsRef.once('value', function (snapshot) {
+                snapshot.forEach(function (childSnapshot, index) {
+                    const data = childSnapshot.val();
+                    
+                    // Format long assist details into multiple lines if needed
+                    const assistDetails = data.assistDetails;
+                    const lines = doc.splitTextToSize(assistDetails, 100); // Wrap text to fit in the page
+
+                    // Add Date, Station, and Assist Details to PDF
+                    doc.text(data.date, 10, y);
+                    doc.text(data.station, 40, y);
+                    doc.text(lines, 100, y);  // Add wrapped text
+
+                    y += lines.length * 5 + 10;  // Adjust for multi-line text
+
+                    // Ensure we don't go off the page
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 10; // Reset y position for new page
+                    }
+                });
+
+                // Save the PDF
+                doc.save('assist_report.pdf');
+            });
+        });
+
+        // Initial Load of Data
+        loadData();
     </script>
+
 </body>
 </html>
