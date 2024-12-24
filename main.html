@@ -8,6 +8,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <script src="redirect.js"></script>
 
+    <style>
+    
+    .sidebar h2 {
+      text-align: center;
+      font-size: 24px;
+      color: #ff4d4d;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      text-decoration: none;
+      width: 100%;
+    }
+    .sidebar button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      padding: 10px 15px;
+      margin: 10px 0;
+      background-color: #262626;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+      display: inline-block;
+    }
+    .sidebar button:hover {
+      background-color: #ff4d4d;
+      color: #fff;
+      transform: scale(1.05);
+      display: inline-block;
+    }
+    .sidebar button i {
+      margin-right: 10px;
+      font-size: 20px;
+      display: inline-block;
+    }
+
+    </style>
+
 </head>
 <body>
     <div class="hero-header">
@@ -24,14 +66,28 @@
                         <span></span>
                     </div>
                     <ui class="navlinks">
-                        <div class="btn_Main">
-                        <li><a href="slidebarPass.html" class="btn active">Data</a></li>
-                        <li><a href="./Gangs/Usgandu/Index/Search.html" class="btn active">Interraction</a></li>
-                        <li><a href="AssistDataBase.html" class="btn active">Assist</a></li>
-                        <li><a href="Statistics.html" class="btn active">Statistics</a></li>
-
-                        
-
+                        <div class="sidebar">
+                            <h2>All</h2>
+                        <li><a href="slidebarPass.html">
+                            <button>
+                              <i></i> Data
+                            </button>
+                          </a></li>
+                          <li><a href="./Gangs/Usgandu/Index/Search.html">
+                            <button>
+                              <i></i> Interraction
+                            </button>
+                          </a></li>
+                          <li><a href="AssistDataBase.html">
+                            <button>
+                              <i></i> Assist
+                            </button>
+                          </a></li>
+                          <li><a href="Statistics.html">
+                            <button>
+                              <i></i> Statistics
+                            </button>
+                          </a></li>
                     </ui>
                 </div>
                 </nav>
@@ -75,7 +131,7 @@
     strings:["Target criminal gangs operating within communities"],
     typedSpeed:100,
     backSpeed:150,
-    loop:true
+    loop:false
   })
 </script>
 
