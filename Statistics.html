@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR&HV Statistics</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- PDFMake Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f9;
+            padding: 10px;
+            text-align: center; /* Center all body content */
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .form-container {
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 0;
+        }
+
+        form input, form select, form button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        form input[type="date"], form input[type="number"], form input[type="text"], form select {
+            width: 100%;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            max-width: 100%;
+            margin: 30px auto; /* Center table */
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: center; /* Center text in table cells */
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center; /* Center text in table cells */
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+
+        /* Subtotal Styling */
+        .subtotal {
+            color: red;
+            font-weight: bold; /* Make subtotal bold */
+        }
+
+        /* Filter Styling */
+        .filter-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-container input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .form-container {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            table, th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            form input, form select, form button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .filter-container input {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            th, td {
+                word-wrap: break-word;
+                white-space: normal;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>RR&HV Statistics </h1>
+
+    <!-- Filter/Search Container -->
+    <div class="filter-container">
+        <input type="text" id="filterInput" placeholder="Search for records...">
+    </div>
+
+    <div class="form-container">
+        <form id="entryForm">
+            <input type="date" id="date" required>
+            <input type="text" id="operation" placeholder="Operation" required>
+            <input type="text" id="details" placeholder="Details" required>
+            <input type="number" id="locationCheck" placeholder="Location Check" required>
+            <input type="number" id="interaction" placeholder="Interaction" required>
+            <input type="number" id="arrest" placeholder="Arrest" required>
+            <input type="number" id="detention" placeholder="Detention (4hrs)" required>
+            <input type="number" id="vehicleCheck" placeholder="Vehicle Check" required>
+            <input type="number" id="towVehicles" placeholder="Tow Vehicles" required>
+            <input type="text" id="towVehicleNumber" placeholder="Tow Vehicle Number" required>
+            <input type="text" id="events" placeholder="Events" required>
+            <select id="areaSelect">
+                <option value="Hithadhoo">Hithadhoo</option>
+                <option value="Gan">Gan</option>
+                <option value="Hulhumeedhoo">Hulhumeedhoo</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Table to display data -->
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Operation</th>
+                <th>Details</th>
+                <th>Location Check</th>
+                <th>Interaction</th>
+                <th>Arrest</th>
+                <th>Detention (4hrs)</th>
+                <th>Vehicle Check</th>
+                <th>Tow Vehicles</th>
+                <th>Tow Vehicle Number</th>
+                <th>Events</th>
+                <th>Area</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Subtotal</td>
+                <td id="subtotal-locationCheck" class="subtotal">0</td>
+                <td id="subtotal-interaction" class="subtotal">0</td>
+                <td id="subtotal-arrest" class="subtotal">0</td>
+                <td id="subtotal-detention" class="subtotal">0</td>
+                <td id="subtotal-vehicleCheck" class="subtotal">0</td>
+                <td id="subtotal-towVehicles" class="subtotal">0</td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Button to export to PDF -->
+    <button id="exportBtn" style="margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer;">Export to PDF</button>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6CnsG3dia4GcevszqrjLgjHZNSQSLUr8",
+            authDomain: "statisticsrrhv.firebaseapp.com",
+            databaseURL: "https://statisticsrrhv-default-rtdb.firebaseio.com",
+            projectId: "statisticsrrhv",
+            storageBucket: "statisticsrrhv.firebasestorage.app",
+            messagingSenderId: "299288311655",
+            appId: "1:299288311655:web:a55d265496e950269461c2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // DOM elements
+        const entryForm = document.getElementById('entryForm');
+        const tableBody = document.getElementById('tableBody');
+        const subtotalLocationCheck = document.getElementById('subtotal-locationCheck');
+        const subtotalInteraction = document.getElementById('subtotal-interaction');
+        const subtotalArrest = document.getElementById('subtotal-arrest');
+        const subtotalDetention = document.getElementById('subtotal-detention');
+        const subtotalVehicleCheck = document.getElementById('subtotal-vehicleCheck');
+        const subtotalTowVehicles = document.getElementById('subtotal-towVehicles');
+        const filterInput = document.getElementById('filterInput');
+
+        // Handle form submission
+        entryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newEntry = {
+                date: document.getElementById('date').value,
+                operation: document.getElementById('operation').value,
+                details: document.getElementById('details').value,
+                locationCheck: parseInt(document.getElementById('locationCheck').value, 10),
+                interaction: parseInt(document.getElementById('interaction').value, 10),
+                arrest: parseInt(document.getElementById('arrest').value, 10),
+                detention: parseInt(document.getElementById('detention').value, 10),
+                vehicleCheck: parseInt(document.getElementById('vehicleCheck').value, 10),
+                towVehicles: parseInt(document.getElementById('towVehicles').value, 10),
+                towVehicleNumber: document.getElementById('towVehicleNumber').value,
+                events: document.getElementById('events').value,
+                area: document.getElementById('areaSelect').value
+            };
+
+            const newRef = firebase.database().ref('entries').push();
+            newRef.set(newEntry);
+
+            entryForm.reset(); // Clear the form
+        });
+
+        // Listen for changes in the database
+        firebase.database().ref('entries').on('child_added', function(snapshot) {
+            const data = snapshot.val();
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.date}</td>
+                <td>${data.operation}</td>
+                <td>${data.details}</td>
+                <td>${data.locationCheck}</td>
+                <td>${data.interaction}</td>
+                <td>${data.arrest}</td>
+                <td>${data.detention}</td>
+                <td>${data.vehicleCheck}</td>
+                <td>${data.towVehicles}</td>
+                <td>${data.towVehicleNumber}</td>
+                <td>${data.events}</td>
+                <td>${data.area}</td>
+                <td><button class="delete-btn" onclick="deleteEntry('${snapshot.key}')">Delete</button></td>
+            `;
+            tableBody.appendChild(row);
+
+            // Update subtotals
+            updateSubtotals();
+        });
+
+        // Update subtotals
+        function updateSubtotals() {
+            let totalLocationCheck = 0;
+            let totalInteraction = 0;
+            let totalArrest = 0;
+            let totalDetention = 0;
+            let totalVehicleCheck = 0;
+            let totalTowVehicles = 0;
+
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                totalLocationCheck += parseInt(row.cells[3].innerText, 10);
+                totalInteraction += parseInt(row.cells[4].innerText, 10);
+                totalArrest += parseInt(row.cells[5].innerText, 10);
+                totalDetention += parseInt(row.cells[6].innerText, 10);
+                totalVehicleCheck += parseInt(row.cells[7].innerText, 10);
+                totalTowVehicles += parseInt(row.cells[8].innerText, 10);
+            });
+
+            subtotalLocationCheck.innerText = totalLocationCheck;
+            subtotalInteraction.innerText = totalInteraction;
+            subtotalArrest.innerText = totalArrest;
+            subtotalDetention.innerText = totalDetention;
+            subtotalVehicleCheck.innerText = totalVehicleCheck;
+            subtotalTowVehicles.innerText = totalTowVehicles;
+        }
+
+        // Delete entry with password protection
+        function deleteEntry(key) {
+            const password = prompt("Enter password to delete the entry (password: 123)");
+            if (password === "123") {
+                firebase.database().ref('entries/' + key).remove();
+                alert("Entry deleted successfully.");
+            } else {
+                alert("Incorrect password.");
+            }
+        }
+
+        // Filter records based on search input
+        filterInput.addEventListener('input', function(e) {
+            const filterValue = e.target.value.toLowerCase();
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filterValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Export to PDF
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const rows = tableBody.querySelectorAll('tr');
+            const rowData = [];
+            rows.forEach(row => {
+                const rowValues = [];
+                row.querySelectorAll('td').forEach(cell => {
+                    rowValues.push(cell.innerText);
+                });
+                rowData.push(rowValues);
+            });
+
+            const docDefinition = {
+                content: [
+                    { text: 'RR&HV Statistics', style: 'header' },
+                    {
+                        table: {
+                            body: [
+                                ['Date', 'Operation', 'Details', 'Location Check', 'Interaction', 'Arrest', 'Detention (4hrs)', 'Vehicle Check', 'Tow Vehicles', 'Tow Vehicle Number', 'Events', 'Area', 'Action'],
+                                ...rowData
+                            ]
+                        },
+                        layout: 'lightHorizontalLines',
+                    },
+                    {
+                        text: `Location Check: ${subtotalLocationCheck.innerText}`, style: 'subtotal'
+                    },
+                    {
+                        text: ` Interaction: ${subtotalInteraction.innerText}`, style: 'subtotal'
+                    },
+                    {
+                        text: `Arrest: ${subtotalArrest.innerText}`, style: 'subtotal'
+                    },
+                    {
+                        text: `Detention: ${subtotalDetention.innerText}`, style: 'subtotal'
+                    },
+                    {
+                        text: `Vehicle Check: ${subtotalVehicleCheck.innerText}`, style: 'subtotal'
+                    },
+                    {
+                        text: `Tow Vehicles: ${subtotalTowVehicles.innerText}`, style: 'subtotal'
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        alignment: 'center',
+                    },
+                    subtotal: {
+                        fontSize: 14,
+                        bold: true,
+                        color: 'red',
+                        alignment: 'center'
+                    }
+                },
+                pageSize: 'A4',
+                pageOrientation: 'landscape',
+            };
+
+            pdfMake.createPdf(docDefinition).download('database-overview.pdf');
+        });
+    </script>
+</body>
+</html>
