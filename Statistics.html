@@ -332,7 +332,7 @@
 
         // Delete entry with password protection
         function deleteEntry(key) {
-            const password = prompt("Enter password to delete the entry (password: 123)");
+            const password = prompt("Enter password to delete the entry:");
             if (password === "123") {
                 firebase.database().ref('entries/' + key).remove();
                 alert("Entry deleted successfully.");
