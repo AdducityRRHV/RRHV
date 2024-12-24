@@ -39,6 +39,12 @@ header{
     font-size: 24px;
     font-weight: 500;
     color: #fff;
+    text-shadow: 2px 2px 0 #000, /* Bottom shadow */
+                   -2px -2px 0 #555, /* Top shadow */
+                   2px -2px 0 #333, /* Right shadow */
+                   -2px 2px 0 #333; /* Left shadow */
+                   font-weight: bold;
+    
 }
 nav .togglebtn{
     width: 35px;
