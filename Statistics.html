@@ -180,7 +180,7 @@
             <input type="number" id="vehicleCheck" placeholder="Vehicle Check" required>
             <input type="number" id="towVehicles" placeholder="Tow Vehicles" required>
             <input type="text" id="towVehicleNumber" placeholder="Tow Vehicle Number" required>
-            <input type="text" id="events" placeholder="Events" required>
+            
             <select id="areaSelect">
                 <option value="All">All</option>
                 <option value="Hithadhoo">Hithadhoo</option>
@@ -208,7 +208,6 @@
                 <th>Vehicle Check</th>
                 <th>Tow Vehicles</th>
                 <th>Tow Vehicle Number</th>
-                <th>Events</th>
                 <th>Area</th>
                 <th>Action</th>
             </tr>
@@ -272,7 +271,6 @@
                 vehicleCheck: parseInt(document.getElementById('vehicleCheck').value, 10),
                 towVehicles: parseInt(document.getElementById('towVehicles').value, 10),
                 towVehicleNumber: document.getElementById('towVehicleNumber').value,
-                events: document.getElementById('events').value,
                 area: document.getElementById('areaSelect').value
             };
 
@@ -297,7 +295,6 @@
                 <td>${data.vehicleCheck}</td>
                 <td>${data.towVehicles}</td>
                 <td>${data.towVehicleNumber}</td>
-                <td>${data.events}</td>
                 <td>${data.area}</td>
                 <td><button class="delete-btn" onclick="deleteEntry('${snapshot.key}')">Delete</button></td>
             `;
@@ -377,7 +374,7 @@
                     {
                         table: {
                             body: [
-                                ['Date', 'Operation', 'Details', 'Location Check', 'Interaction', 'Arrest', 'Detention (4hrs)', 'Vehicle Check', 'Tow Vehicles', 'Tow Vehicle Number', 'Events', 'Area', 'Action'],
+                                ['Date', 'Operation', 'Details', 'Location Check', 'Interaction', 'Arrest', 'Detention (4hrs)', 'Vehicle Check', 'Tow Vehicles', 'Tow Vehicle Number','Area', 'Action'],
                                 ...rowData
                             ]
                         },
