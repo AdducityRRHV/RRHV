@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adducity Rapid Repid Response & High Visibility</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+/* General body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #2d2d2d;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Login container */
+.login-container {
+    background: #333;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    width: 320px;
+}
+
+/* Heading */
+h1 {
+    margin-bottom: 10px;
+    color: #ff4747; /* Red color for danger */
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Subheading */
+.subheading {
+    font-size: 1rem;
+    color: #bbb;
+    margin-bottom: 20px;
+}
+
+/* Warning icon */
+.warning-icon {
+    font-size: 3rem;
+    color: #ff4747;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ff4747;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+    font-size: 1rem;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff4747;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e02f2f;
+}
+
+/* Error message */
+#error-message {
+    margin-top: 10px;
+    color: #ff4747;
+    font-size: 1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>Addu City HV</h1>
+        <p class="subheading">All Data @2024.</p>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+        <p id="error-message" class="hidden">🚨 Invalid username or password!</p>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>
