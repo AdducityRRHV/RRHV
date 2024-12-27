@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRHV Login Entries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0c0c0c;
+            padding: 2rem;
+        }
+
+        h2 {
+            color: #f0e9e9;
+            text-align: center;
+        }
+
+        .entry {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .entry p {
+            margin: 0.5rem 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h2>RRHV Login Entries</h2>
+    <div id="data-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMkNe7OoQyg_YGKf5pl5xgIjRh50jNgdM",
+            authDomain: "logindata-d9768.firebaseapp.com",
+            databaseURL: "https://logindata-d9768-default-rtdb.firebaseio.com",
+            projectId: "logindata-d9768",
+            storageBucket: "logindata-d9768.firebasestorage.app",
+            messagingSenderId: "84372813616",
+            appId: "1:84372813616:web:e59a2b53e09308a673baf5"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const database = firebase.database();
+
+        // Display login entries
+        function displayData(data) {
+            const container = document.getElementById("data-container");
+            container.innerHTML = ''; // Clear previous content
+
+            for (let person in data) {
+                if (data[person].entries && Array.isArray(data[person].entries)) {
+                    data[person].entries.forEach(entry => {
+                        const div = document.createElement('div');
+                        div.classList.add('entry');
+                        div.innerHTML = `
+                            <p><strong>Person:</strong> ${entry.person}</p>
+                            <p><strong>Login Time:</strong> ${entry.date}</p>
+                        `;
+                        container.appendChild(div);
+                    });
+                }
+            }
+        }
+
+        const userRef = database.ref('users');
+        userRef.once('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                displayData(data);
+            } else {
+                alert('No data found.');
+            }
+        });
+    </script>
+
+</body>
+</html>
