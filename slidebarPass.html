@@ -157,7 +157,7 @@
     <script>
         function checkPassword() {
             const enteredPassword = document.getElementById('password').value;
-            const correctPassword = "1234"; // Password for unlocking the list
+            const correctPassword = "1"; // Password for unlocking the list
             const dropdown = document.getElementById('dropdown');
 
             if (enteredPassword === correctPassword) {
@@ -171,7 +171,7 @@
         function verifyPasswordAndRedirect(option) {
             const enteredPassword = prompt("Please enter the password to access this option:");
 
-            if (enteredPassword === "1234") {
+            if (enteredPassword === "1") {
                 // Redirect based on selected option if password is correct
                 openCustomHTML(option);
             } else {
