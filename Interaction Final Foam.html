@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction Details Form</title>
+    <style>
+        /* Default Light Mode */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 100px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .button-group input {
+            background-color:  #8B0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .button-group input:hover {
+            background-color: #272727;
+        }
+
+        .uploaded-image {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .current-age {
+            color: #007BFF; /* Blue color */
+        }
+
+        .crime-groups {
+            color: #8B0000; /* Dark red color */
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+        body.dark-mode .container {
+            background-color: #444;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea {
+            background-color: #555;
+            color: #fff;
+            border: 1px solid #666;
+        }
+
+        body.dark-mode .button-group input {
+            background-color: #0056b3;
+        }
+
+        body.dark-mode .button-group input:hover {
+            background-color: #00408d;
+        }
+
+        body.dark-mode .uploaded-image {
+            border: 2px solid #fff;
+        }
+
+        /* Fixed Dark Mode Toggle Button */
+        #toggleMode {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        #toggleMode:hover {
+            background-color: #555;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            /* Adjust Dark Mode Button for mobile screens */
+            #toggleMode {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="toggleMode">Toggle Dark Mode</button>
+
+    <div class="container" id="formContainer">
+        <h1>Interaction Details Form</h1>
+        <form id="interactionForm">
+            <div class="form-group">
+                <label for="uploadImage">Upload Image</label>
+                <input type="file" id="uploadImage" name="uploadImage" accept="image/*" onchange="previewImage()">
+                <img id="imagePreview" class="uploaded-image" style="display: none;" />
+            </div>
+
+            <div class="form-group">
+                <label for="currentDateTime">Select Current Date and Time</label>
+                <input type="datetime-local" id="currentDateTime" name="CurrentDateTime">
+            </div>
+
+            <div class="form-group">
+                <label for="idNumber">ID Number</label>
+                <input type="text" id="idNumber" name="idNumber" oninput="autoFillData()">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="Name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="permanentAddress">Permanent Address</label>
+                <input type="text" id="permanentAddress" name="PermanentAddress" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="currentAddress">Current Address</label>
+                <input type="text" id="currentAddress" name="CurrentAddress">
+            </div>
+
+            <div class="form-group">
+                <label for="selectDate">DOB</label>
+                <input type="date" id="selectDate" name="DOB">
+            </div>
+
+            <div class="form-group">
+                <label for="currentAge" class="current-age">Current Age</label>
+                <input type="text" id="currentAge" name="CurrentAge" class="Current-age" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="crimeGroups" class="crime-groups">Select Crime Groups</label>
+                <select id="crimeGroups" name="CrimeGroups">
+                    <option value="group1">Group 1</option>
+                    <option value="group2">Group 2</option>
+                    <option value="group3">Group 3</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <input type="text" id="contact" name="Contact">
+            </div>
+
+            <div class="form-group">
+                <label for="locationName">Location Name</label>
+                <input type="text" id="locationName" name="LocationName">
+            </div>
+
+            <div class="form-group">
+                <label for="cautionedFor">Cautioned For</label>
+                <textarea id="cautionedFor" name="cautionedFor"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="details">Details</label>
+                <textarea id="details" name="details"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="dutyOfficer">Duty Officer Name</label>
+                <input type="text" id="dutyOfficer" name="DutyOfficer">
+            </div>
+
+            <div class="button-group">
+                <input type="button" value="Export PDF" onclick="submitForm()">
+                <input type="button" value="Export JPG" onclick="exportToJPG()">
+            </div>
+        </form>
+    </div>
+
+    <!-- Include jsPDF and html2canvas Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // Toggle Dark/Light Mode
+        document.getElementById('toggleMode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        document.getElementById('selectDate').addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            const age = today.getFullYear() - selectedDate.getFullYear();
+            document.getElementById('currentAge').value = age;
+        });
+
+        function previewImage() {
+            const file = document.getElementById('uploadImage').files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.style.display = 'block';
+                imagePreview.src = reader.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        }
+
+        // Auto-fill Name and Permanent Address based on ID
+        const idMapping = {
+            "A261714": { name: "Ahmed Vaseem", permanentAddress: "Aavina" },
+            "B312345": { name: "John Doe", permanentAddress: "New York" },
+            "C424567": { name: "Jane Smith", permanentAddress: "California" },
+            // Add more IDs and corresponding Name and Address here
+        };
+
+        function autoFillData() {
+            const idNumber = document.getElementById('idNumber').value;
+            if (idMapping[idNumber]) {
+                document.getElementById('name').value = idMapping[idNumber].name;
+                document.getElementById('permanentAddress').value = idMapping[idNumber].permanentAddress;
+            } else {
+                document.getElementById('name').value = "";
+                document.getElementById('permanentAddress').value = "";
+            }
+        }
+
+        function submitForm() {
+            const form = document.getElementById('interactionForm');
+            const formData = new FormData(form);
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.setTextColor(0, 102, 204);
+            doc.text('Interaction Details Form', 10, 10);
+            doc.setDrawColor(0, 102, 204);
+            doc.line(10, 15, 200, 15);
+            let yOffset = 20;
+
+            const imageFile = document.getElementById('uploadImage').files[0];
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const imgData = reader.result;
+                    doc.addImage(imgData, 'JPEG', 10, yOffset, 50, 50);
+                    yOffset += 60;
+                    generateFormData(doc, formData, yOffset);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                generateFormData(doc, formData, yOffset);
+            }
+        }
+
+        function generateFormData(doc, formData, yOffset) {
+            doc.setFontSize(12);
+            formData.forEach((value, key) => {
+                if (key === 'uploadImage') return;
+
+                if (key === 'crimeGroups') {
+                    doc.setTextColor(139, 0, 0);
+                } else {
+                    doc.setTextColor(0, 0, 0);
+                }
+
+                if (key === 'cautionedFor' || key === 'details') {
+                    doc.setDrawColor(0, 0, 0);
+                    const boxHeight = Math.max(30, doc.getTextDimensions(value).h + 10);
+                    doc.rect(10, yOffset, 190, boxHeight, 'S');
+                    doc.text(`${key.replace(/([A-Z])/g, ' $1')}:`, 12, yOffset + 5);
+                    doc.text(value, 12, yOffset + 15, { maxWidth: 180 });
+                    yOffset += boxHeight + 10;
+                } else {
+                    doc.text(`${key.replace(/([A-Z])/g, ' $1')}: ${value}`, 10, yOffset);
+                    yOffset += 10;
+                }
+            });
+
+            doc.save('InteractionDetails.pdf');
+        }
+
+        function exportToJPG() {
+            const formContainer = document.getElementById('formContainer');
+            const uploadImage = document.getElementById('uploadImage');
+            const buttons = document.querySelector('.button-group');
+
+            // Hide elements not needed in JPG
+            uploadImage.style.display = 'none';
+            buttons.style.display = 'none';
+
+            html2canvas(formContainer).then((canvas) => {
+                const link = document.createElement('a');
+                link.download = 'InteractionDetails.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.click();
+
+                // Restore elements after export
+                uploadImage.style.display = 'block';
+                buttons.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
