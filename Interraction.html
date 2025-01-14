@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff4d4d;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        #searchBar {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: white;
+        }
+
+        .filters {
+            margin-bottom: 15px;
+        }
+
+        select {
+            padding: 10px;
+            margin-right: 10px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .photo-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Passport Size Image */
+        .photo-item {
+            width: 100px;   /* Passport size width */
+            height: 130px;  /* Passport size height */
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fits in the box without distortion */
+        }
+
+        .photo-item:hover {
+            transform: scale(1.1);
+            border: 2px solid red;
+        }
+
+        /* Apply Dark Red Border Animation */
+        .photo-item.selected {
+            border: 2px solid darkred;
+            animation: borderAnimation 0.5s ease-out infinite;
+        }
+
+        /* Centered Image Details Panel */
+        .details-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #444;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.9em;
+            z-index: 100;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        .details-panel h2 {
+            color: #ff4d4d;
+            font-size: 1.2em;
+        }
+
+        .details-panel p {
+            margin: 5px 0;
+        }
+
+        .details-panel button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .details-panel button:hover {
+            background-color: darkred;
+        }
+
+        /* Image Viewer Modal */
+        .image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .image-viewer img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid red;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+        .image-viewer button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        .image-viewer button:hover {
+            background-color: darkred;
+        }
+
+        /* Border Animation */
+        @keyframes borderAnimation {
+            0% {
+                border-color: transparent;
+            }
+            50% {
+                border-color: darkred;
+            }
+            100% {
+                border-color: transparent;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .photo-item {
+                width: 80px;
+                height: 100px;
+            }
+
+            .details-panel {
+                font-size: 0.8em;
+                padding: 12px;
+            }
+
+            .details-panel h2 {
+                font-size: 1.1em;
+            }
+
+            #searchBar {
+                font-size: 0.85em;
+            }
+
+            select {
+                font-size: 0.85em;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .photo-item {
+                width: 70px;
+                height: 90px;
+            }
+
+            .details-panel {
+                font-size: 0.75em;
+                padding: 10px;
+            }
+
+            .details-panel h2 {
+                font-size: 1em;
+            }
+
+            #searchBar {
+                font-size: 0.8em;
+            }
+
+            select {
+                font-size: 0.8em;
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Interraction</h1>
+
+        <!-- Search Bar and Filters -->
+        <div class="filters">
+            <input
+                type="text"
+                id="searchBar"
+                placeholder="Search by Name, Nickname, or ID..."
+                oninput="filterPhotos()"
+            />
+            <select id="crimeGroupFilter" onchange="filterPhotos()">
+                <option value="">Select Crime Group</option>
+                <option value="SKOOP">SKOOP</option>
+                <option value="USGANDU">USGANDU</option>
+                <option value="VISS VISS">VISS VISS</option>
+                <option value="FORLAND">FORLAND</option>
+                <option value="XEPHIER">XEPHIER</option>
+                <option value="MYLO">MYLO</option>
+                <option value="LONA">LONA</option>
+                <option value="JOALIANS">JOALIANS</option>
+                <option value="OTF">OTF</option>
+                <option value="LOTHAARI">LOTHAARI</option>
+                <option value="HABEYS">HABEYS</option>
+                <option value="MASTHU">MASTHU</option>
+                <option value="VAKKAN">VAKKAN</option>
+                <option value="OTHERS">OTHERS</option>
+            </select>
+
+            <select id="leaderFilter" onchange="filterPhotos()">
+                <option value="">Select Leader</option>
+                <option value="Fayaz">LOTHAARI</option>
+                <option value="Adhil">FORLAND</option>
+
+                
+            </select>
+            <select id="UnderFilter" onchange="filterPhotos()">
+                <option value="">Under 18</option>
+                <option value="Fayaz">LOTHAARI</option>
+                <option value="Adhil">FORLAND</option>
+                < <option value="SKOOP">SKOOP</option>
+                <option value="USGANDU">USGANDU</option>
+                <option value="VISS VISS">VISS VISS</option>
+                <option value="FORLAND">FORLAND</option>
+                <option value="XEPHIER">XEPHIER</option>
+                <option value="MYLO">MYLO</option>
+                <option value="LONA">LONA</option>
+                <option value="JOALIANS">JOALIANS</option>
+                <option value="OTF">OTF</option>
+                <option value="LOTHAARI">LOTHAARI</option>
+                <option value="HABEYS">HABEYS</option>
+                <option value="MASTHU">MASTHU</option>
+                <option value="VAKKAN">VAKKAN</option>
+                <option value="OTHERS">OTHERS</option>
+            </select>
+        </div>
+
+        <h2></h2>
+        <div>
+            <p><strong>Total Interraction: <span id="totalImages">0</span></strong></p>
+        </div>
+        <div class="photo-gallery" id="photoGallery"></div>
+
+        <!-- Image Details Panel (Centered) -->
+        <div class="details-panel" id="detailsPanel">
+            <h2>Image Details</h2>
+            <p><strong>ID:</strong> <span id="detailID"></span></p>
+            <p><strong>Name:</strong> <span id="detailName"></span></p>
+            <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+            <p><strong>Current Address:</strong> <span id="detailCurrentAddress"></span></p>
+            <p><strong>DOB:</strong> <span id="detailDOB"></span></p>
+            <p><strong>Crime Group:</strong> <span id="detailCrimeGroup"></span></p>
+            <p><strong>Common Name:</strong> <span id="detailCommonName"></span></p>
+            <button onclick="closeDetailsPanel()">Close</button>
+        </div>
+
+        <!-- Image Viewer Modal -->
+        <div class="image-viewer" id="imageViewer">
+            <img id="fullImage" src="" alt="Full Image">
+            <button onclick="closeImageViewer()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample data of people in the database
+        const peopleData = [
+            // UNDER 18 INTERRECTION
+            { id: "A375543", name: "Alhan Adhil", nickname: "Adhil", group: "FORLAND", Under: "Adhil", address: "Atheena/S.Hithadhoo", currentAddress: "Atheena/S.Hithadhoo", dob: "10-Jan-2009",UNDER18 : "Sha", image: "A375543 Alhan Adhil Fourland.jpg" },
+            
+            // Gang Lothaari
+            { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LOTHAARI", leader: "Fayaz", address: "Three Flower / S.Meedhoo", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A270788 Hussain fayaz Lothari.jpg" },
+            { id: "A338030", name: "Huzaim Ali", nickname: "Huzaim", group: "LOTHAARI", leader: "", address: "Iram / S.Meedhoo", currentAddress: "Iram / S.Meedhoo", dob: "03-May-2005", commonName: "Iram", image: "A338030 Huzaim Ali Lothari.jpg" },
+            { id: "A347769", name: "Hussain Fayaz", nickname: "Fayaz", group: "LOTHAARI", leader: "Fayaz", address: "Three Flower / S.Meedhoo", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A347769 Nishaar Naseer Lothari.jpg" },
+            { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LOTHAARI", leader: "Fayaz", address: "Three Flower / S.Meedhoo", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A387167 Hussain Muflih Lothari.jpg" },
+            { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LOTHAARI", leader: "Fayaz", address: "Three Flower / S.Meedhoo", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A359654 Ahmed Zain Azeem Lothari.jpg" },
+            { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LOTHAARI", leader: "Fayaz", address: "Three Flower / S.Meedhoo", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A3555504 Ahmed Maaish Ashraf Lothari.jpg" },
+             // Gang FORLAND
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277160 Ahmed Shahdh Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277841 Ibrahim Afrah Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278500 Ahmed Raamee Thaufeeq Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278984 Shiyaah Mohamed Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296733 Mohamed Rasheed Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A303032 Mohamed Didi Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A332710 Mohamed Shaain Muhiyidhdheen Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A341596 Nishwaan Mohamed Moosa Didi Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A341976 Maaish Hussain Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A344944 Ibrahim Shahuban Musthafa Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A352436 Mohamed Yushau Naseem Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A352752 Mohamed Maaish Mohamed Mahir Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A362142 Ali Afzal Fourland.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "FORLAND", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A365513 Ibrahim Shiaan Fourland.jpg" },
+             // Gang HABEYS
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "HABEYS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A276528 Ali Yamyn Habeys.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "HABEYS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A297919 Hassan Rasheed Habeys.jpg" },
+             // Gang JOALIANS
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278966 Zaid Anwar Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280047 Ahmed Jazlaan Jamsheed Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280048 Mohamed Jaushan Jamsheedh Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280091 Ibrahim Saam Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A284100 Ali Saaniz Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A284544 Abdulla Afsheen Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A294791 Ibrahim Asir Joalians.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "JOALIANS", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308747 Ibrahim Suneel Joalians.jpg" },
+             // Gang LONA
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280207 Ali Shazuwaan Ibrahim Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280335 Hisaam Naseer Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A280414 Ali Raail Muneer Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296392 Layal Ahmed Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A297041 Iuthisaam Mohamed Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A297740 Abdulla Riyaash Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A349945 Mohamed Ilm Ahmed Nazim Lona.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "LONA", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A366388 Lazhaan Mohamed Lona.jpg" },
+             // Gang MYLO
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A020295 Ibrahim Siraj Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A020404 Abdulla Nizam Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A069633 Ahmed Shakir Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277551 Mohamed Mysaan Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277676 Ahmed Irufaanu Abdulla Ali Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277681 Ameen Mohamed Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "#", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308515 Hafiz Fauzee Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A309188 Ali Nadheem Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A326089 Mohamed Zahi Zuhair Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A335191 Samaah Thaufeeg Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A336343 Mohamed Yaeesh Azaad Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A359391 Mohamed Ayaan Ismail Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A363813 Asadhulla Alsan Hassan Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A372418 Mohamed Naail Moosa Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A376224 Abdulla Absal Ahmed Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A376798 Mohamed Nooh Hussain Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A387311 Ali Efhaam Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A391127 Ahmed Hoodh Hussain Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A391932 Ibrahim Rayyaan Rasheed Mylo.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "MYLO", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A391948 Hussain Raakin Rasheed Mylo.jpg" },
+             // Gang OTF
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "OTF", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A287397 Mohamed Nifaz OTF.jpg" },
+             // Gang SKOOP
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277924 Hoodh Latheef Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278180 Abdulla Muyasssr Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A293457 Ali Yaman Ahmed skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A293812 Mohamed Shaan Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A294783 Ahmed Fahumy Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A295465 Ibrahim Maahil Naeem Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296369 Ahmed Moosa Didi Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296416 Ahmed Ibrahim Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A302320 Mohamed Rifaau Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A303419 Aslam Mohamed Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A306580 Ibrahim Nifaz Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A307162 Abdulla Saeed Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A307968 Ali Shiraz Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308015 Mohamed Hoodh Latheef Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308026 Shazman Hussain Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308513 Shifaaz Abdulla Didi Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A309382 Hassan Mohamed Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A309398 Maaz Mohamed Arif Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A316876 Hussain Ma'aadh Ali Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A332618 Iyaaz Mohamed Ahmed Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A340163 Ibrahim Siman Ahmed Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A342253 Ahmed Yusru Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A343506 Mohamed Ahil Amir Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A346126 Mohamed Shuhbaan Faruhaadh Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A352122 Hassan Viaam Skoop.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "SKOOP", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A356524 Mohamed Looth Miyaz Skoop.jpg" },
+             // Gang USGANDU
+
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A018937 Hassan Abdulla Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A020416 Hussain Ahmed Didi Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A102144 Ali Ihusaan Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A271337 Mohamed Azaan Ali Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A275080 Abdhulla Auzam Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A277111 Ahmed Leevaan Mohamed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278144 Thalib Naseem Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278147 Hussain Tharig Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278967 Ilyas Anvar Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A278968 Qayyoom Anwar Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A290216 Hussain Didi Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A291584 Ali Imran Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296555 Ahmed Thaif Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296612 Ahmed Mohamed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A296613 Mohamed Mamdood Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A301947 Hussain Shaah Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A306106 Ali Ahmed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308425 Ismail Rasheed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308618 Liushan Mohamed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A308992 Hussain Asfalu Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A329566 Ahmed Hubaab Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A330012 Mohamed Zayaan Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A330479 Ibrahim Saaim Abdul Aleem Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A335448 Ali Alsan Mohamed Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A348654 Mohamed Alsan Amjadh Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A350025 Mohamed Jinan Adam Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A350431 Ibrahim Aayan Ali Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A359802 Ahmed Dhai Shahidh Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A364076 Ahmed Jinaan Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A382459 Ibrahim Aidhaan Amjadh Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A397399 Ahmed Maaz Rasheedh Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A398883 Mohamed Asjau Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A423264 Ahmed Ibrahim Usganda.jpg" },
+             { id: "A270788", name: "Hussain Fayaz", nickname: "Fayaz", group: "USGANDU", leader: "Fayaz", address: "#", currentAddress: "Three Flower / S.Meedhoo", dob: "19-Aug-1994", commonName: "Fayaz", image: "A450709 Abdhul Ghany Ali Usganda.jpg" }
+
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+        ];
+
+        // Function to populate the photos
+        function populatePhotos() {
+            const gallery = document.getElementById("photoGallery");
+            gallery.innerHTML = "";
+
+            peopleData.forEach(person => {
+                const div = document.createElement("div");
+                div.classList.add("photo-item");
+                div.setAttribute("data-id", person.id); // For identification
+                div.innerHTML = `<img src="${person.image}" alt="${person.name}" onclick="showDetails('${person.id}')" ondblclick="openImageViewer('${person.image}')">`;
+                gallery.appendChild(div);
+            });
+
+            updateTotalImages(peopleData.length);
+        }
+
+        // Show image details on click
+        function showDetails(id) {
+            const person = peopleData.find(p => p.id === id);
+            if (person) {
+                document.getElementById("detailID").textContent = person.id;
+                document.getElementById("detailName").textContent = person.name;
+                document.getElementById("detailAddress").textContent = person.address;
+                document.getElementById("detailCurrentAddress").textContent = person.currentAddress;
+                document.getElementById("detailDOB").textContent = person.dob;
+                document.getElementById("detailCrimeGroup").textContent = person.group;
+                document.getElementById("detailCommonName").textContent = person.commonName;
+
+                document.getElementById("detailsPanel").style.display = "block";
+            }
+        }
+
+        // Close image details panel
+        function closeDetailsPanel() {
+            document.getElementById("detailsPanel").style.display = "none";
+        }
+
+        // Open image in larger view
+        function openImageViewer(imageSrc) {
+            const viewer = document.getElementById("imageViewer");
+            document.getElementById("fullImage").src = imageSrc;
+            viewer.style.display = "flex";
+        }
+
+        // Close image viewer
+        function closeImageViewer() {
+            document.getElementById("imageViewer").style.display = "none";
+        }
+
+        // Update total images count
+        function updateTotalImages(count) {
+            document.getElementById("totalImages").textContent = count;
+        }
+
+        // Function to filter the photos based on input
+        function filterPhotos() {
+            const searchQuery = document.getElementById("searchBar").value.toLowerCase();
+            const selectedGroup = document.getElementById("crimeGroupFilter").value;
+            const selectedLeader = document.getElementById("leaderFilter").value;
+            const selectedUnder = document.getElementById("UnderFilter").value;
+
+            const filteredPhotos = peopleData.filter(person => {
+                const matchesName = person.name.toLowerCase().includes(searchQuery) || person.nickname.toLowerCase().includes(searchQuery) || person.id.includes(searchQuery);
+                const matchesGroup = selectedGroup === "" || person.group === selectedGroup;
+                const matchesLeader = selectedLeader === "" || person.leader === selectedLeader;
+                const matchesUnder = selectedUnder === "" || person.Under === selectedUnder;
+                
+
+                return matchesName && matchesGroup && matchesLeader && matchesUnder;
+            });
+
+            const gallery = document.getElementById("photoGallery");
+            gallery.innerHTML = "";
+
+            filteredPhotos.forEach(person => {
+                const div = document.createElement("div");
+                div.classList.add("photo-item");
+                div.setAttribute("data-id", person.id); // For identification
+                div.innerHTML = `<img src="${person.image}" alt="${person.name}" onclick="showDetails('${person.id}')" ondblclick="openImageViewer('${person.image}')">`;
+                gallery.appendChild(div);
+            });
+
+            updateTotalImages(filteredPhotos.length);
+
+            // Add animation border for the selected filter images
+            const allImages = document.querySelectorAll('.photo-item');
+            allImages.forEach(img => {
+                img.classList.remove('selected');
+                if (
+                    (selectedGroup === "" || img.querySelector('img').alt.includes(selectedGroup)) &&
+                    (selectedLeader === "" || img.querySelector('img').alt.includes(selectedLeader)) &&
+                    (selectedUnder === "" || img.querySelector('img').alt.includes(selectedUnder))
+                ) {
+                    img.classList.add('selected');
+                }
+            });
+        }
+
+        // Call the function to populate photos on page load
+        populatePhotos();
+    </script>
+
+</body>
+</html>
