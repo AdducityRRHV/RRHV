@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RR&HV AdduCity</title>
     <style>
-        body {
+         body {
             background-color: #252525;
             color: #fff;
             margin: 0;
@@ -183,7 +183,6 @@
                 font-size: 0.9rem;
             }
         }
-
     </style>
 </head>
 <body>
@@ -194,13 +193,12 @@
             <div class="form-group">
                 <label for="person">Officers</label>
                 <select id="person" required>
-                    <option value="TEAM LEADER">3782</option>
-                    <option value="AHMED VASEEM SN5637">5637</option>
-                    <option value="ABDHULLA SHAHIL ALI SN5932">5932</option>
-                    <option value="ZAIYAAN RASHEED SN5928">5928</option>
-                    <option value="HUSSAIN SHIHAN SN6274">6274</option>
-                    <option value="HUSSAIN MUSHAFIU SN5665">5665</option>
-                    
+                    <option value="3782">TEAM LEADER</option>
+                    <option value="5637">AHMED VASEEM</option>
+                    <option value="5932">ABDHULLA SHAHIL ALI</option>
+                    <option value="5928">ZAIYAAN RASHEED</option>
+                    <option value="6274">HUSSAIN SHIHAN</option>
+                    <option value="5665">HUSSAIN MUSHAFIU</option>
                 </select>
             </div>
             <div class="form-group">
@@ -248,7 +246,6 @@
         </script>
     </div>
 
-    <!-- Firebase Configuration -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
@@ -263,9 +260,18 @@
             appId: "1:84372813616:web:e59a2b53e09308a673baf5"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        // Officer Passwords
+        const officerPasswords = {
+            "3782": "teamLeader123",
+            "5637": "vaseemPass456",
+            "5932": "shahilPass789",
+            "5928": "zaayaanPass101",
+            "6274": "shihanPass202",
+            "5665": "mushafiuPass303"
+        };
 
         // Dynamic Date and Time
         function updateDateTime() {
@@ -277,45 +283,45 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // Save Data to Firebase
+        // Save Data to Firebase and Redirect
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const person = document.getElementById('person').value;
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const enteredPassword = document.getElementById('password').value;
             const currentDate = new Date().toLocaleString();
 
-            if (password !== '123') {
+            // Check if the entered password matches the officer's password
+            if (officerPasswords[person] === enteredPassword) {
+                const userRef = database.ref('users/' + person);
+
+                userRef.once('value', snapshot => {
+                    const existingData = snapshot.val();
+                    const data = {
+                        person: person,
+                        date: currentDate
+                    };
+
+                    if (existingData && existingData.entries) {
+                        userRef.child('entries').push(data);
+                    } else {
+                        userRef.set({
+                            entries: [data]
+                        });
+                    }
+
+                    alert('Login successful!');
+                    window.location.href = 'main.html'; // Redirect to entries page
+                }).catch(error => {
+                    console.error("Error saving data:", error);
+                    alert("Error saving data: " + error.message);
+                });
+            } else {
                 alert('Incorrect password');
-                return;
             }
-
-            const userRef = database.ref('users/' + person);
-
-            userRef.once('value', snapshot => {
-                const existingData = snapshot.val();
-                const data = {
-                    person: person,
-                    date: currentDate
-                };
-
-                if (existingData && existingData.entries) {
-                    userRef.child('entries').push(data);
-                } else {
-                    userRef.set({
-                        entries: [data]
-                    });
-                }
-
-                alert('Login successful!');
-                window.location.href = 'main.html';
-            }).catch(error => {
-                console.error("Error saving data:", error);
-                alert("Error saving data: " + error.message);
-            });
         });
     </script>
-    <script src="login.js"></script>
+
+<script src="login.js"></script>
 
 </body>
 </html>
