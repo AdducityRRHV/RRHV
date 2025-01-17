@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR&HV AdduCity</title>
+    <style>
+        body {
+            background-color: #252525;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            
+        }
+        h2 {
+    margin-bottom: 10px;
+    color: #ff4747; /* Red color for danger */
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+
+        .login-container {
+            background: #333;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    width: 320px;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            color: #c93030;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ff4747;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+    font-size: 1rem;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #7a7373;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+    background-color: #ff4747;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color:#cc0000;
+        }
+
+        .date-time {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .date-time p {
+            font-size: 0.9rem;
+            color: #ffffff;
+        }
+
+        /* Responsive Design */
+        
+
+.container{
+    flex-direction: column;
+    padding-top: 2rem;
+}
+.hero-text{
+    padding: 40px 0px;
+}
+
+}
+#crimeButton {
+            background-color:#333030;
+            color: #fff;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        #crimeButton:hover {
+            background-color: #cc0000;
+        }
+        #passwordPrompt {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(29, 28, 28);
+            padding: 30px;
+            border: 1px solid #641e1e;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        #passwordPrompt input[type="password"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #363636;
+            border-radius: 5px;
+        }
+        #passwordPrompt button {
+            background-color: #7a7373;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #passwordPrompt button:hover {
+            background-color: #cc0000;
+        }
+        #crimeButton {
+            background-color: #ff4d4d;
+            color: #fff;
+            padding: 10px 05px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        #crimeButton:hover {
+            background-color: #cc0000;
+        }
+
+@media (max-width: 768px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            input,
+            select,
+            button {
+                font-size: 0.9rem;
+                padding: 0.7rem;
+            }
+
+            label {
+                font-size: 0.9rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Adducity HV</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="person">Officers</label>
+                <select id="person" required>
+                    <option value="TEAM LEADER">3782</option>
+                    <option value="AHMED VASEEM SN5637">5637</option>
+                    <option value="ABDHULLA SHAHIL ALI SN5932">5932</option>
+                    <option value="ZAIYAAN RASHEED SN5928">5928</option>
+                    <option value="HUSSAIN SHIHAN SN6274">6274</option>
+                    <option value="HUSSAIN MUSHAFIU SN5665">5665</option>
+                    
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="RRHV" readonly>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Login</button>
+            </div>
+        </form>
+        <div class="date-time">
+            <p id="date-time"></p>
+        </div>
+        <button id="crimeButton" onclick="showPasswordPrompt()">Admin</button>
+
+    <div id="passwordPrompt">
+        <p>Enter the password to access:</p>
+        <input id="passwordInput" type="password" placeholder="Password" />
+        <br />
+        <button onclick="checkPassword()">Submit</button>
+        <button onclick="hidePasswordPrompt()">Cancel</button>
+    </div>
+        <script>
+            function showPasswordPrompt() {
+                document.getElementById('passwordPrompt').style.display = 'block';
+            }
+    
+            function hidePasswordPrompt() {
+                document.getElementById('passwordPrompt').style.display = 'none';
+            }
+    
+            function checkPassword() {
+                const password = document.getElementById('passwordInput').value;
+                if (password === "123") {
+                    window.location.href = 'RRHV Login Entries.html';
+                } else {
+                    alert("Incorrect password! Access denied.");
+                    document.getElementById('passwordInput').value = ''; // Clear the input field
+                }
+            }
+        </script>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMkNe7OoQyg_YGKf5pl5xgIjRh50jNgdM",
+            authDomain: "logindata-d9768.firebaseapp.com",
+            databaseURL: "https://logindata-d9768-default-rtdb.firebaseio.com",
+            projectId: "logindata-d9768",
+            storageBucket: "logindata-d9768.appspot.com",
+            messagingSenderId: "84372813616",
+            appId: "1:84372813616:web:e59a2b53e09308a673baf5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Dynamic Date and Time
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeStr = now.toLocaleString();
+            document.getElementById("date-time").textContent = "Current Date & Time: " + dateTimeStr;
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Save Data to Firebase
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const person = document.getElementById('person').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const currentDate = new Date().toLocaleString();
+
+            if (password !== '123') {
+                alert('Incorrect password');
+                return;
+            }
+
+            const userRef = database.ref('users/' + person);
+
+            userRef.once('value', snapshot => {
+                const existingData = snapshot.val();
+                const data = {
+                    person: person,
+                    date: currentDate
+                };
+
+                if (existingData && existingData.entries) {
+                    userRef.child('entries').push(data);
+                } else {
+                    userRef.set({
+                        entries: [data]
+                    });
+                }
+
+                alert('Login successful!');
+                window.location.href = 'main.html';
+            }).catch(error => {
+                console.error("Error saving data:", error);
+                alert("Error saving data: " + error.message);
+            });
+        });
+    </script>
+    <script src="login.js"></script>
+
+</body>
+</html>
