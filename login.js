@@ -1,6 +1,6 @@
 // Predefined credentials
-const VALID_USERNAME = "";
-const VALID_PASSWORD = "";
+const VALID_USERNAME = "RRHV";
+const VALID_PASSWORD = "RRHV";
 
 // Handle form submission
 document.getElementById("loginForm").addEventListener("submit", function (event) {
