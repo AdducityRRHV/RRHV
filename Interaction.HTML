@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction Details</title>
+    <style>
+        /* Default Light Mode */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-group .file-input {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-group .file-input input[type="file"] {
+            display: block;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .center {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+            height: auto;
+        }
+
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .form-group .auto-gen {
+            color: #888;
+        }
+
+        select[multiple] {
+            height: auto;
+            min-height: 100px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: #2e2e2e;
+            color: #fff;
+        }
+
+        .container.dark-mode {
+            background-color: #444;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group label.dark-mode {
+            color: #ddd;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background-color: #555;
+            color: #fff;
+            border-color: #666;
+        }
+
+        .form-group button {
+            background-color: #7d0519;
+            color: white;
+            border: 1px solid #7d0519;
+        }
+
+        .form-group button:hover {
+            background-color: #000000;
+            border: 1px solid #605859;
+        }
+
+        .form-group .auto-gen {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Interaction Details</h2>
+
+        <!-- Dark Mode Toggle Button -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button onclick="toggleDarkMode()">Toggle Dark/Light Mode</button>
+        </div>
+
+        <form id="interactionForm" onsubmit="handleFormSubmit(event)">
+            <div class="form-group">
+                <label for="passport">Upload File</label>
+                <input type="file" class="file-input" id="passport" onchange="showImage(event)">
+                <img id="image-preview" class="center" style="display: none;" />
+            </div>
+
+            <div class="form-group">
+                <label for="current-date">Select Current Date and Time</label>
+                <input type="datetime-local" id="current-date">
+            </div>
+
+            <div class="form-group">
+                <label for="id-number">ID Number</label>
+                <input type="text" id="id-number" oninput="autoFillDetails()">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="permanent-address">Permanent Address</label>
+                <input type="text" id="permanent-address" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="current-address">Current Address</label>
+                <input type="text" id="current-address">
+            </div>
+
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" onchange="calculateAge()">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Automatic Generate Current Age</label>
+                <input type="text" id="age" class="auto-gen" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="crime-group" style="color: red;">Select Crime Groups</label>
+                <select id="crime-group">
+                    <option value="group1">Group 1</option>
+                    <option value="group2">Group 2</option>
+                    <option value="group3">Group 3</option>
+                    <option value="Masthu">Masthu</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <input type="text" id="contact">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location Name</label>
+                <input type="text" id="location">
+            </div>
+
+            <div class="form-group">
+                <label for="cautioned-for">Cautioned For (1000 words max)</label>
+                <textarea id="cautioned-for" rows="4" maxlength="5000" placeholder="Enter up to 1000 words"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="details">Details (1000 words max)</label>
+                <textarea id="details" rows="6" maxlength="5000" placeholder="Enter up to 1000 words"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="officers">Select Officers</label>
+                <select id="officers" multiple onchange="updateDutyOfficers()">
+                    <option value="5637">5637</option>
+                    <option value="3782">3782 </option>
+                    <option value="5932">5932</option>
+                    <option value="5665">5665</option>
+                    <option value="5928">5928</option>
+                    <option value="6274">6274</option>
+                    <option value="6458">6458</option>
+                    <option value="6543">6543</option>
+                    <option value="6573">6573</option>
+                    <option value="6657">6657</option>
+                    <option value="6660">6660</option>
+                    <option value="6745">6745</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="duty-officer">Duty Officers (Auto)</label>
+                <input type="text" id="duty-officer" class="auto-gen" readonly>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // List of ID records (add as many as needed)
+        const idRecords = [
+            { id: "A261714", name: "John Doe", permanentAddress: "123 Main St, Male, Maldives" },
+            { id: "B879213", name: "Jane Doe", permanentAddress: "456 Ocean Ave, Male, Maldives" },
+            { id: "C123456", name: "Ali Khan", permanentAddress: "789 Beach Rd, Male, Maldives" },
+            { id: "D987654", name: "Sara Ahmed", permanentAddress: "321 Green Valley, Male, Maldives" }
+        ];
+
+        // Function to handle autofill of name and address based on ID
+        function autoFillDetails() {
+            const id = document.getElementById("id-number").value;
+
+            const record = idRecords.find(record => record.id === id);
+
+            if (record) {
+                document.getElementById("name").value = record.name;
+                document.getElementById("permanent-address").value = record.permanentAddress;
+            } else {
+                document.getElementById("name").value = "";
+                document.getElementById("permanent-address").value = "";
+            }
+        }
+
+        function calculateAge() {
+            const dob = new Date(document.getElementById("dob").value);
+            const currentDate = new Date();
+
+            if (isNaN(dob)) {
+                document.getElementById("age").value = '';
+                return;
+            }
+
+            let age = currentDate.getFullYear() - dob.getFullYear();
+            const m = currentDate.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && currentDate.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            document.getElementById("age").value = age;
+        }
+
+        function updateDutyOfficers() {
+            const officers = Array.from(document.getElementById("officers").selectedOptions)
+                .map(option => option.value);
+            document.getElementById("duty-officer").value = officers.join(", ");
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const labels = document.querySelectorAll('.form-group label');
+
+            body.classList.toggle('dark-mode');
+            container.classList.toggle('dark-mode');
+            labels.forEach(label => label.classList.toggle('dark-mode'));
+        }
+
+        function showImage(event) {
+            const imagePreview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                imagePreview.style.display = 'block';
+                imagePreview.src = reader.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle form submission
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // Store form data in localStorage
+            const formData = {
+                currentDate: document.getElementById("current-date").value,
+                idNumber: document.getElementById("id-number").value,
+                name: document.getElementById("name").value,
+                permanentAddress: document.getElementById("permanent-address").value,
+                currentAddress: document.getElementById("current-address").value,
+                dob: document.getElementById("dob").value,
+                age: document.getElementById("age").value,
+                crimeGroup: document.getElementById("crime-group").value,
+                contact: document.getElementById("contact").value,
+                location: document.getElementById("location").value,
+                cautionedFor: document.getElementById("cautioned-for").value,
+                details: document.getElementById("details").value,
+                dutyOfficers: document.getElementById("duty-officer").value,
+                passportImage: document.getElementById("image-preview").src
+            };
+
+            localStorage.setItem("formData", JSON.stringify(formData));
+
+            // Redirect to the submitted page
+            window.location.href = "submitted.html";
+        }
+    </script>
+
+</body>
+</html>
