@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Data</title>
+    <style>
+        /* Styles for the display page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        h2 {
+            color: #333;
+    margin-bottom: 20px;
+    text-align: center; /* Center align the header text */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group div {
+            font-size: 16px;
+            width: 100%;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group div {
+            min-height: 50px;
+            white-space: pre-wrap; /* Preserve newlines */
+            word-wrap: break-word; /* Wrap long words */
+        }
+
+        .form-group input[readonly],
+        .form-group div[readonly] {
+            background-color: #e0e0e0;
+        }
+
+        .form-group .dark-red {
+            color: #8B0000;
+            font-weight: bold;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            height: auto;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .export-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #890505;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .export-btn:hover {
+            background-color: #56585a;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <div class="container" id="content-to-export">
+        <h2>Submitted Interaction Details</h2>
+
+        <div class="form-group">
+            <img id="submitted-image" class="image-preview" alt="Uploaded Image" />
+        </div>
+
+        <div class="form-group">
+            <label for="current-date">Current Date and Time</label>
+            <input type="text" id="submitted-current-date" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="id-number">ID Number</label>
+            <input type="text" id="submitted-id-number" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="submitted-name" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="permanent-address">Permanent Address</label>
+            <input type="text" id="submitted-permanent-address" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="current-address">Current Address</label>
+            <input type="text" id="submitted-current-address" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="text" id="submitted-dob" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Current Age</label>
+            <input type="text" id="submitted-age" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="crime-group">Crime Group</label>
+            <input type="text" id="submitted-crime-group" class="dark-red" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact</label>
+            <input type="text" id="submitted-contact" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location Name</label>
+            <input type="text" id="submitted-location" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="cautioned-for">Cautioned For</label>
+            <div id="submitted-cautioned-for" readonly></div>
+        </div>
+
+        <div class="form-group">
+            <label for="details">Details</label>
+            <div id="submitted-details" readonly></div>
+        </div>
+
+        <div class="form-group">
+            <label for="duty-officer">Duty Officers</label>
+            <input type="text" id="submitted-duty-officer" readonly>
+        </div>
+
+        <button class="export-btn" id="export-btn">Export as JPG</button>
+    </div>
+
+    <script>
+        // Populate submitted data and replace textarea with div for "Cautioned For" and "Details"
+        const formData = JSON.parse(localStorage.getItem("formData"));
+
+        if (formData) {
+            document.getElementById("submitted-image").src = formData.passportImage;
+            document.getElementById("submitted-current-date").value = formData.currentDate;
+            document.getElementById("submitted-id-number").value = formData.idNumber;
+            document.getElementById("submitted-name").value = formData.name;
+            document.getElementById("submitted-permanent-address").value = formData.permanentAddress;
+            document.getElementById("submitted-current-address").value = formData.currentAddress;
+            document.getElementById("submitted-dob").value = formData.dob;
+            document.getElementById("submitted-age").value = formData.age;
+            document.getElementById("submitted-crime-group").value = formData.crimeGroup;
+            document.getElementById("submitted-contact").value = formData.contact;
+            document.getElementById("submitted-location").value = formData.location;
+            document.getElementById("submitted-cautioned-for").innerText = formData.cautionedFor;
+            document.getElementById("submitted-details").innerText = formData.details;
+            document.getElementById("submitted-duty-officer").value = formData.dutyOfficers;
+        }
+
+        // Export as JPG
+        document.getElementById("export-btn").addEventListener("click", function () {
+            const content = document.getElementById("content-to-export");
+
+            html2canvas(content, {
+                scrollY: -window.scrollY, // Capture the entire visible content
+            }).then((canvas) => {
+                const link = document.createElement('a');
+                link.download = 'submitted_data.jpg';
+                link.href = canvas.toDataURL("image/jpeg", 1.0);
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
