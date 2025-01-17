@@ -1,5 +1,5 @@
 // Predefined credentials
-const VALID_USERNAME = "RRHV";
+const VALID_USERNAME = "";
 const VALID_PASSWORD = "";
 
 // Handle form submission
