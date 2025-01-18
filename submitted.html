@@ -80,7 +80,7 @@
             max-width: 200px;
             height: auto;
             margin: 0 auto 20px;
-            border-radius: 50%;
+            border-radius: 15%;
             display: block;
         }
 
@@ -104,7 +104,7 @@
 <body>
 
     <div class="container" id="content-to-export">
-        <h2>Submitted Interaction Details</h2>
+        <h2>Interaction Details</h2>
 
         <div class="form-group">
             <img id="submitted-image" class="image-preview" alt="Uploaded Image" />
@@ -166,8 +166,8 @@
         </div>
 
         <div class="form-group">
-            <label for="details">Details</label>
-            <div id="submitted-details" readonly></div>
+            <label for="Action">Action</label>
+            <div id="submitted-Action" readonly></div>
         </div>
 
         <div class="form-group">
@@ -195,7 +195,7 @@
             document.getElementById("submitted-contact").value = formData.contact;
             document.getElementById("submitted-location").value = formData.location;
             document.getElementById("submitted-cautioned-for").innerText = formData.cautionedFor;
-            document.getElementById("submitted-details").innerText = formData.details;
+            document.getElementById("submitted-Action").innerText = formData.details;
             document.getElementById("submitted-duty-officer").value = formData.dutyOfficers;
         }
 
