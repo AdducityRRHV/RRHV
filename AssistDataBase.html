@@ -320,6 +320,11 @@
         // Initial Load of Data
         loadData();
     </script>
+     <script>
+        if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+          window.location.href = 'index.html';  // Replace with the desired URL
+        }
+      </script>
 
 </body>
 </html>
