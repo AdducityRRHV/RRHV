@@ -59,6 +59,20 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+         /* Dark Mode */
+         body.dark-mode {
+            background-color: #2e2e2e;
+            color: #fff;
+        }
+
+        .container.dark-mode {
+            background-color: #444;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group label.dark-mode {
+            color: #ddd;
+        }
 
         .form-group div {
             min-height: 50px;
@@ -102,6 +116,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+    <div style="text-align: right; margin-bottom: 20px;">
+        <button onclick="toggleDarkMode()">Toggle Dark/Light Mode</button>
+    </div>
 
     <div class="container" id="content-to-export">
         <h2>Interaction Details</h2>
@@ -198,6 +215,18 @@
             document.getElementById("submitted-Action").innerText = formData.details;
             document.getElementById("submitted-duty-officer").value = formData.dutyOfficers;
         }
+
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const labels = document.querySelectorAll('.form-group label');
+
+            body.classList.toggle('dark-mode');
+            container.classList.toggle('dark-mode');
+            labels.forEach(label => label.classList.toggle('dark-mode'));
+        }
+
 
         // Export as JPG
         document.getElementById("export-btn").addEventListener("click", function () {
