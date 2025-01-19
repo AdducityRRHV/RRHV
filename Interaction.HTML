@@ -162,17 +162,17 @@
 
             <div class="form-group">
                 <label for="id-number">ID Number</label>
-                <input type="text" id="id-number" oninput="autoFillDetails()">
+                <input type="text" id="id-number" name="idNumber" placeholder="ID Number" oninput="autoFillData()">
             </div>
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" readonly>
+                <input type="text" id="name" name="name" placeholder="Enter Name">
             </div>
 
             <div class="form-group">
                 <label for="permanent-address">Permanent Address</label>
-                <input type="text" id="permanent-address" readonly>
+                <input type="text" id="permanent-address" name="permanentAddress" placeholder="Enter Permanent Address">
             </div>
 
             <div class="form-group">
@@ -257,25 +257,16 @@
 
     <script>
         // List of ID records (add as many as needed)
-        const idRecords = [
-            { id: "A261714", name: "John Doe", permanentAddress: "123 Main St, Male, Maldives" },
-            { id: "B879213", name: "Jane Doe", permanentAddress: "456 Ocean Ave, Male, Maldives" },
-            { id: "C123456", name: "Ali Khan", permanentAddress: "789 Beach Rd, Male, Maldives" },
-            { id: "D987654", name: "Sara Ahmed", permanentAddress: "321 Green Valley, Male, Maldives" }
-        ];
+        const idData = {
+            "A261714": { name: "John Doe", address: "123 Main Street" },
+            "B123456": { name: "Jane Smith", address: "456 Elm Avenue" }
+        };
 
-        // Function to handle autofill of name and address based on ID
-        function autoFillDetails() {
-            const id = document.getElementById("id-number").value;
-
-            const record = idRecords.find(record => record.id === id);
-
-            if (record) {
-                document.getElementById("name").value = record.name;
-                document.getElementById("permanent-address").value = record.permanentAddress;
-            } else {
-                document.getElementById("name").value = "";
-                document.getElementById("permanent-address").value = "";
+        function autoFillData() {
+            const idNumber = document.getElementById('id-number').value;
+            if (idData[idNumber]) {
+                document.getElementById('name').value = idData[idNumber].name;
+                document.getElementById('permanent-address').value = idData[idNumber].address;
             }
         }
 
