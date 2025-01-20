@@ -22,7 +22,7 @@
         }
 
         .container {
-            width: 100%;
+            width: 200%;
             max-width: 600px;
             margin-top: 20px;
             background-color: #f9f9f9;
@@ -33,7 +33,7 @@
         }
 
         h2 {
-            color: #333;
+            color: #d30505;
     margin-bottom: 20px;
     text-align: center; /* Center align the header text */
         }
@@ -89,9 +89,13 @@
             color: #8B0000;
             font-weight: bold;
         }
+        .form-group .dark-Blue {
+            color: #0a043f;
+            font-weight: bold;
+        }
 
         .image-preview {
-            max-width: 200px;
+            max-width: 400px;
             height: auto;
             margin: 0 auto 20px;
             border-radius: 15%;
@@ -179,12 +183,12 @@
 
         <div class="form-group">
             <label for="cautioned-for">Cautioned For</label>
-            <div id="submitted-cautioned-for" readonly></div>
+            <div id="submitted-cautioned-for" class="dark-Blue" readonly></div>
         </div>
 
         <div class="form-group">
             <label for="Action">Action</label>
-            <div id="submitted-Action" readonly></div>
+            <div id="submitted-Action" class="dark-Blue" readonly></div>
         </div>
 
         <div class="form-group">
@@ -230,17 +234,46 @@
 
         // Export as JPG
         document.getElementById("export-btn").addEventListener("click", function () {
-            const content = document.getElementById("content-to-export");
+    const content = document.getElementById("content-to-export");
 
-            html2canvas(content, {
-                scrollY: -window.scrollY, // Capture the entire visible content
-            }).then((canvas) => {
-                const link = document.createElement('a');
-                link.download = 'submitted_data.jpg';
-                link.href = canvas.toDataURL("image/jpeg", 1.0);
-                link.click();
-            });
-        });
+    html2canvas(content, {
+        scrollY: -window.scrollY, // Capture the entire visible content
+    }).then((canvas) => {
+        // Set the desired dimensions for a portrait orientation
+        const targetWidth = 1080; // Adjust width for your desired resolution
+        const targetHeight = 1920; // Adjust height for portrait orientation
+
+        // Create a new canvas with the specified dimensions
+        const portraitCanvas = document.createElement('canvas');
+        portraitCanvas.width = targetWidth;
+        portraitCanvas.height = targetHeight;
+
+        const ctx = portraitCanvas.getContext('2d');
+        ctx.fillStyle = "#fff"; // Set background color
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+        // Scale the original canvas content to fit the new dimensions
+        const scale = Math.min(
+            targetWidth / canvas.width,
+            targetHeight / canvas.height
+        );
+
+        const xOffset = (targetWidth - canvas.width * scale) / 2;
+        const yOffset = (targetHeight - canvas.height * scale) / 2;
+
+        ctx.drawImage(
+            canvas,
+            0, 0, canvas.width, canvas.height, // Source rectangle
+            xOffset, yOffset, canvas.width * scale, canvas.height * scale // Destination rectangle
+        );
+
+        // Export the scaled canvas as a JPG
+        const link = document.createElement('a');
+        link.download = 'submitted_data.jpg';
+        link.href = portraitCanvas.toDataURL("image/jpeg", 1.0);
+        link.click();
+    });
+});
     </script>
     <script>
         if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
