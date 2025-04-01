@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criminal Gallery</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-grow: 1;
+            gap: 10px;
+        }
+
+        #searchBar {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            min-width: 150px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        select {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            flex-grow: 1;
+            min-width: 150px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background-color: #34495e;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stats span {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Gallery Styles */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .photo-item {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .photo-item.selected {
+            box-shadow: 0 0 0 3px #3498db;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .under-18-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(241, 196, 15, 0.9);
+            color: #2c3e50;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Details Panel */
+        .details-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-btn {
+            font-size: 24px;
+            background: none;
+            color: #7f8c8d;
+            padding: 0 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            word-break: break-word;
+            font-size: 16px;
+        }
+
+        .photo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .photo-container img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .status-active {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            color: #7f8c8d;
+        }
+
+        .status-arrested {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .status-wanted {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        /* Image Viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .viewer-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+        }
+
+        .viewer-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1002;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            
+            .photo-item img {
+                height: 150px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-container, .filters {
+                flex-direction: column;
+            }
+            
+            select, #searchBar {
+                width: 100%;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .details-panel {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .photo-item img {
+                height: 120px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Criminal Gallery</h1>
+            <div class="controls">
+                <div class="search-container">
+                    <input type="text" id="searchBar" placeholder="Search by name or ID..." oninput="filterPhotos()">
+                </div>
+                <div class="filters">
+                    <select id="groupFilter" onchange="filterPhotos()">
+                        <option value="">All Groups</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <select id="positionFilter" onchange="filterPhotos()">
+                        <option value="">All Positions</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <select id="statusFilter" onchange="filterPhotos()">
+                        <option value="">All Statuses</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <select id="ageFilter" onchange="filterPhotos()">
+                        <option value="">All Ages</option>
+                        <option value="under18">Under 18</option>
+                        <option value="over18">18 and Over</option>
+                    </select>
+                </div>
+            </div>
+            <div class="stats">
+                <span>Total: <span id="totalImages">0</span></span>
+                <span>Showing: <span id="filteredCount">0</span></span>
+                <span>Under 18: <span id="under18Count">0</span></span>
+                <span>Last Updated: <span id="lastUpdated">-</span></span>
+            </div>
+        </header>
+
+        <div id="notification" class="notification"></div>
+
+        <main>
+            <div id="gallery" class="gallery"></div>
+        </main>
+
+        <!-- Details Panel -->
+        <div id="detailsPanel" class="details-panel">
+            <div class="panel-content">
+                <div class="panel-header">
+                    <h2>Criminal Details</h2>
+                    <button class="close-btn" onclick="closeDetailsPanel()">×</button>
+                </div>
+                
+                <div class="photo-container">
+                    <img id="detailPhoto" src="" alt="Criminal Photo">
+                </div>
+                
+                <div class="details-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">ID Number:</span>
+                        <span id="detailID" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name:</span>
+                        <span id="detailName" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Address:</span>
+                        <span id="detailAddress" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Current Address:</span>
+                        <span id="detailCurrentAddress" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date of Birth:</span>
+                        <span id="detailDOB" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Age:</span>
+                        <span id="detailAge" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Group:</span>
+                        <span id="detailGroup" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Group Position:</span>
+                        <span id="detailGroupPosition" class="detail-value"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span id="detailStatus" class="detail-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Viewer -->
+        <div id="imageViewer" class="image-viewer">
+            <div class="viewer-content">
+                <button class="close-btn" onclick="closeImageViewer()">×</button>
+                <img id="fullImage" src="" alt="Full size image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let peopleData = [];
+        let currentSelectedPerson = null;
+        let uniqueGroups = new Set();
+        let uniquePositions = new Set();
+        let uniqueStatuses = new Set();
+        let under18Count = 0;
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7GeP3yxb0UJIPmE6e-PeA5V3CTK0mevc",
+            authDomain: "gangsgallery.firebaseapp.com",
+            databaseURL: "https://gangsgallery-default-rtdb.firebaseio.com",
+            projectId: "gangsgallery",
+            storageBucket: "gangsgallery.appspot.com",
+            messagingSenderId: "622725528053",
+            appId: "1:622725528053:web:cf27dab0632c51914208bc",
+            measurementId: "G-3BWT2GWFZR"
+        };
+
+        // Initialize Firebase
+        let firebaseApp;
+        let database;
+        let storage;
+        let auth;
+
+        async function initializeFirebase() {
+            try {
+                if (!firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    console.log("Firebase initialized successfully");
+                    
+                    // Initialize services
+                    database = firebase.database();
+                    storage = firebase.storage();
+                    auth = firebase.auth();
+                    
+                    // Enable persistence
+                    try {
+                        await database.setPersistenceEnabled(true);
+                        console.log("Persistence enabled");
+                    } catch (persistenceError) {
+                        console.warn("Persistence error:", persistenceError);
+                    }
+                    
+                    // Authenticate anonymously
+                    try {
+                        await auth.signInAnonymously();
+                        console.log("Authenticated anonymously");
+                    } catch (authError) {
+                        console.warn("Anonymous auth error:", authError);
+                    }
+                    
+                    return true;
+                }
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                showNotification(`Firebase init failed: ${error.message}`, true);
+                return false;
+            }
+        }
+
+        // Initialize the application
+        async function init() {
+            const firebaseReady = await initializeFirebase();
+            
+            if (firebaseReady) {
+                loadDataFromFirebase();
+                setupEventListeners();
+            } else {
+                showNotification("Using local data - Firebase not available", true);
+                loadSampleData();
+            }
+        }
+
+        // Load data from Firebase
+        function loadDataFromFirebase() {
+            showLoading();
+            
+            database.ref('criminals').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Convert object to array
+                    peopleData = Object.keys(data).map(key => {
+                        return { ...data[key], id: key };
+                    });
+                    
+                    // Process data to extract unique values and calculate ages
+                    processData();
+                    
+                    // Populate filter dropdowns
+                    populateFilterOptions();
+                    
+                    populatePhotos();
+                    updateStats();
+                    showNotification("Data loaded successfully");
+                } else {
+                    showNotification("No data found in Firebase", true);
+                    loadSampleData();
+                }
+            }, (error) => {
+                console.error("Error loading data:", error);
+                showNotification("Error loading data", true);
+                loadSampleData();
+            });
+        }
+
+        // Process data to extract unique values and calculate ages
+        function processData() {
+            uniqueGroups.clear();
+            uniquePositions.clear();
+            uniqueStatuses.clear();
+            under18Count = 0;
+            
+            peopleData.forEach(person => {
+                // Extract unique groups
+                if (person.group) {
+                    uniqueGroups.add(person.group);
+                }
+                
+                // Extract unique positions
+                if (person.groupPosition) {
+                    uniquePositions.add(person.groupPosition);
+                }
+                
+                // Extract unique statuses
+                if (person.status) {
+                    uniqueStatuses.add(person.status);
+                }
+                
+                // Calculate age and under 18 status
+                if (person.dob) {
+                    const age = calculateAge(person.dob);
+                    person.age = age;
+                    person.isUnder18 = age < 18;
+                    if (person.isUnder18) under18Count++;
+                } else {
+                    person.age = "Unknown";
+                    person.isUnder18 = false;
+                }
+            });
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dob) {
+            try {
+                // Try to parse different date formats
+                let birthDate;
+                
+                // Try DD-MMM-YYYY format (e.g., 10-Jan-2009)
+                if (dob.match(/^\d{1,2}-[a-zA-Z]{3}-\d{4}$/)) {
+                    const parts = dob.split('-');
+                    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    const month = monthNames.indexOf(parts[1]);
+                    birthDate = new Date(parts[2], month, parts[0]);
+                } 
+                // Try MM/DD/YYYY format
+                else if (dob.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+                    const parts = dob.split('/');
+                    birthDate = new Date(parts[2], parts[0] - 1, parts[1]);
+                }
+                // Try YYYY-MM-DD format
+                else if (dob.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+                    const parts = dob.split('-');
+                    birthDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+                // Try MMM DD, YYYY format (e.g., Jan 10, 2009)
+                else if (dob.match(/^[a-zA-Z]{3} \d{1,2}, \d{4}$/)) {
+                    birthDate = new Date(dob);
+                }
+                // Fallback to Date.parse
+                else {
+                    birthDate = new Date(dob);
+                }
+                
+                // If we couldn't parse the date, return "Unknown"
+                if (isNaN(birthDate.getTime())) {
+                    return "Unknown";
+                }
+                
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                return age;
+            } catch (e) {
+                console.error("Error calculating age for DOB:", dob, e);
+                return "Unknown";
+            }
+        }
+
+        // Populate filter dropdowns with unique values
+        function populateFilterOptions() {
+            const groupFilter = document.getElementById('groupFilter');
+            const positionFilter = document.getElementById('positionFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            
+            // Clear existing options (keeping the first "All" option)
+            while (groupFilter.options.length > 1) groupFilter.remove(1);
+            while (positionFilter.options.length > 1) positionFilter.remove(1);
+            while (statusFilter.options.length > 1) statusFilter.remove(1);
+            
+            // Add group options
+            uniqueGroups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupFilter.appendChild(option);
+            });
+            
+            // Add position options
+            uniquePositions.forEach(position => {
+                const option = document.createElement('option');
+                option.value = position;
+                option.textContent = position;
+                positionFilter.appendChild(option);
+            });
+            
+            // Add status options
+            uniqueStatuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status;
+                option.textContent = status;
+                statusFilter.appendChild(option);
+            });
+        }
+
+        // Load sample data (fallback)
+        function loadSampleData() {
+            peopleData = [
+                { 
+                    id: "A375543", 
+                    name: "Alhan Adhil", 
+                    address: "Atheena/S.Hithadhoo", 
+                    currentAddress: "Atheena/S.Hithadhoo", 
+                    dob: "10-Jan-2009",
+                    group: "FORLAND", 
+                    groupPosition: "",
+                    status: "Active",
+                    image: "https://via.placeholder.com/200"
+                },
+                { 
+                    id: "A270788", 
+                    name: "Hussain Fayaz", 
+                    address: "Three Flower / S.Meedhoo", 
+                    currentAddress: "Three Flower / S.Meedhoo", 
+                    dob: "19-Aug-1994",
+                    group: "LOTHAARI", 
+                    groupPosition: "Leader",
+                    status: "Wanted",
+                    image: "https://via.placeholder.com/200"
+                },
+                { 
+                    id: "A123456", 
+                    name: "John Doe", 
+                    address: "Unknown", 
+                    currentAddress: "Unknown", 
+                    dob: "15-Mar-2010",
+                    group: "OTHER", 
+                    groupPosition: "Member",
+                    status: "Active",
+                    image: "https://via.placeholder.com/200"
+                }
+            ];
+            
+            // Process sample data
+            processData();
+            populateFilterOptions();
+            populatePhotos();
+            updateStats();
+            showNotification("Loaded sample data", true);
+        }
+
+        // Show loading state
+        function showLoading() {
+            document.getElementById("gallery").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        }
+
+        // Populate photos in the gallery
+        function populatePhotos() {
+            const gallery = document.getElementById("gallery");
+            gallery.innerHTML = "";
+            
+            peopleData.forEach(person => {
+                const photoItem = createPhotoElement(person);
+                gallery.appendChild(photoItem);
+            });
+            
+            updateStats();
+            filterPhotos(); // Apply any active filters
+        }
+
+        // Create a photo element
+        function createPhotoElement(person) {
+            const div = document.createElement("div");
+            div.className = "photo-item";
+            div.dataset.id = person.id;
+            div.dataset.group = person.group || "";
+            div.dataset.position = person.groupPosition || "";
+            div.dataset.status = person.status || "";
+            div.dataset.age = person.age || "";
+            div.dataset.isUnder18 = person.isUnder18 || "false";
+            
+            // Create image element with error handling
+            const img = document.createElement("img");
+            img.src = person.image || "https://via.placeholder.com/200";
+            img.alt = person.name;
+            img.loading = "lazy";
+            img.onerror = function() {
+                this.src = "https://via.placeholder.com/200";
+            };
+            
+            // Create group badge
+            const badge = document.createElement("div");
+            badge.className = "photo-badge";
+            badge.textContent = person.group || "UNKNOWN";
+            
+            div.appendChild(img);
+            div.appendChild(badge);
+            
+            // Add under 18 badge if applicable
+            if (person.isUnder18) {
+                const under18Badge = document.createElement("div");
+                under18Badge.className = "under-18-badge";
+                under18Badge.textContent = "Under 18";
+                div.appendChild(under18Badge);
+            }
+            
+            div.addEventListener("click", () => showDetails(person.id));
+            div.addEventListener("dblclick", () => openImageViewer(person.image));
+            
+            return div;
+        }
+
+        // Show details for a specific person
+        function showDetails(id) {
+            const person = peopleData.find(p => p.id === id);
+            if (!person) return;
+            
+            currentSelectedPerson = person;
+            
+            // Update details panel
+            document.getElementById("detailPhoto").src = person.image || "https://via.placeholder.com/200";
+            document.getElementById("detailID").textContent = person.id || "N/A";
+            document.getElementById("detailName").textContent = person.name || "N/A";
+            document.getElementById("detailAddress").textContent = person.address || "N/A";
+            document.getElementById("detailCurrentAddress").textContent = person.currentAddress || "N/A";
+            document.getElementById("detailDOB").textContent = person.dob || "N/A";
+            
+            // Age display
+            const ageElement = document.getElementById("detailAge");
+            if (person.age === "Unknown") {
+                ageElement.textContent = "Unknown";
+                ageElement.style.color = "#7f8c8d";
+            } else {
+                ageElement.textContent = person.age;
+                if (person.isUnder18) {
+                    ageElement.style.color = "#e74c3c";
+                    ageElement.style.fontWeight = "bold";
+                } else {
+                    ageElement.style.color = "";
+                    ageElement.style.fontWeight = "";
+                }
+            }
+            
+            document.getElementById("detailGroup").textContent = person.group || "N/A";
+            document.getElementById("detailGroupPosition").textContent = person.groupPosition || "N/A";
+            
+            // Status with styling
+            const statusElement = document.getElementById("detailStatus");
+            statusElement.textContent = person.status || "Unknown";
+            statusElement.className = "detail-value";
+            if (person.status) {
+                statusElement.classList.add(`status-${person.status.toLowerCase().replace(" ", "-")}`);
+            }
+            
+            // Show the panel
+            document.getElementById("detailsPanel").style.display = "block";
+        }
+
+        // Filter photos based on search and filters
+        function filterPhotos() {
+            const searchQuery = document.getElementById("searchBar").value.toLowerCase();
+            const selectedGroup = document.getElementById("groupFilter").value;
+            const selectedPosition = document.getElementById("positionFilter").value;
+            const selectedStatus = document.getElementById("statusFilter").value;
+            const selectedAge = document.getElementById("ageFilter").value;
+            
+            const allPhotoItems = document.querySelectorAll('.photo-item');
+            let visibleCount = 0;
+            
+            allPhotoItems.forEach(item => {
+                const matchesSearch = item.dataset.id.includes(searchQuery) || 
+                                     item.querySelector('img').alt.toLowerCase().includes(searchQuery);
+                
+                const matchesGroup = !selectedGroup || item.dataset.group === selectedGroup;
+                const matchesPosition = !selectedPosition || item.dataset.position === selectedPosition;
+                const matchesStatus = !selectedStatus || item.dataset.status === selectedStatus;
+                
+                // Age filter logic
+                let matchesAge = true;
+                if (selectedAge === "under18") {
+                    matchesAge = item.dataset.isUnder18 === "true";
+                } else if (selectedAge === "over18") {
+                    matchesAge = item.dataset.isUnder18 === "false";
+                }
+                
+                const shouldShow = matchesSearch && matchesGroup && matchesPosition && matchesStatus && matchesAge;
+                
+                item.style.display = shouldShow ? "block" : "none";
+                if (shouldShow) visibleCount++;
+            });
+            
+            document.getElementById("filteredCount").textContent = visibleCount;
+        }
+
+        // Close details panel
+        function closeDetailsPanel() {
+            document.getElementById("detailsPanel").style.display = "none";
+            currentSelectedPerson = null;
+        }
+
+        // Open image viewer
+        function openImageViewer(imageSrc) {
+            document.getElementById("fullImage").src = imageSrc;
+            document.getElementById("imageViewer").style.display = "flex";
+        }
+
+        // Close image viewer
+        function closeImageViewer() {
+            document.getElementById("imageViewer").style.display = "none";
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById("totalImages").textContent = peopleData.length;
+            document.getElementById("filteredCount").textContent = peopleData.length;
+            document.getElementById("under18Count").textContent = under18Count;
+            
+            // Set last updated time
+            const now = new Date();
+            document.getElementById("lastUpdated").textContent = 
+                now.toLocaleDateString() + " " + now.toLocaleTimeString().slice(0,5);
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.className = "notification";
+            if (isError) notification.classList.add("error");
+            notification.classList.add("show");
+            
+            setTimeout(() => {
+                notification.classList.remove("show");
+            }, 3000);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Close modals when clicking outside
+            document.addEventListener("click", (e) => {
+                if (e.target === document.getElementById("detailsPanel")) {
+                    closeDetailsPanel();
+                }
+                if (e.target === document.getElementById("imageViewer")) {
+                    closeImageViewer();
+                }
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") {
+                    closeDetailsPanel();
+                    closeImageViewer();
+                }
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>
